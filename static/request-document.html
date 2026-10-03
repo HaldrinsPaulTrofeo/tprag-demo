@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fil"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Request document | Pagsanjan MAO</title>
+<link rel="stylesheet" href="/static/gov.css"><link rel="stylesheet" href="/static/requests.css"><link rel="stylesheet" href="/static/request-letter.css">
+<script src="/static/site.js" defer></script><script src="/static/request-common.js" defer></script><script src="/static/request-letter.js" defer></script>
+<style>body{background:#eef1ee}.doc-bar{max-width:800px;margin:20px auto 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.doc-bar .grow{flex:1;font:13px/1.5 system-ui,sans-serif;color:#3d5547}.doc-bar a,.doc-bar button{font:14px system-ui,sans-serif;cursor:pointer;border:1px solid #275b43;border-radius:6px;padding:8px 14px;background:#275b43;color:#fff;text-decoration:none}
+.doc-bar .secondary{background:#fff;color:#275b43}#docWrap{padding:0 12px 40px}</style>
+</head><body data-page="request"><main class="wrap" id="main">
+<div class="doc-bar no-print"><a class="secondary" id="docBack" href="/request">Back</a><span class="grow" id="docStatus"></span>
+<button type="button" id="docPrint">Print / Save as PDF</button></div>
+<div id="docMessage" class="rq-message no-print" role="status"></div>
+<div id="docWrap"></div>
+</main>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const id = location.pathname.split("/")[2];
+  const STATUS = {pending: "Awaiting the MAO's decision: the approval signature appears here once accepted.",
+    approved: "Approved and signed by the Municipal Agriculture Office. You can print this as proof of the request.",
+    deferred: "Deferred to the next supply: not yet signed by the MAO.",
+    cancelled: "Not approved: this request document is cancelled."};
+  try {
+    const me = await RequestUI.api("/api/me");
+    if (me.role !== "barangay") document.getElementById("docBack").href = "/";
+    const doc = await RequestUI.api("/api/requests/" + encodeURIComponent(id) + "/document");
+    document.title = doc.reference + " · Barangay " + doc.barangay;
+    document.getElementById("docStatus").textContent = STATUS[doc.state] || "";
+    RequestLetter.render(doc, document.getElementById("docWrap"));
+  } catch (e) { RequestUI.message("docMessage", e.message, true); }
+  document.getElementById("docPrint").onclick = () => window.print();
+});
+</script>
+</body></html>

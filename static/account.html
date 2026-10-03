@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Account | Pagsanjan MAO</title>
+<link rel="stylesheet" href="/static/gov.css"><link rel="stylesheet" href="/static/requests.css"><link rel="stylesheet" href="/static/portal.css">
+<script src="/static/site.js" defer></script><script src="/static/request-common.js" defer></script><script src="/static/account.js" defer></script><script src="/static/profile.js" defer></script>
+</head><body data-page="account"><main class="wrap" id="main">
+<section class="rq-card" style="max-width:620px">
+  <p class="rq-note" id="who">Signed in</p>
+  <h1>Change your password</h1>
+  <div id="firstNotice" hidden>
+    <p><strong>You are using a temporary password.</strong> Choose your own before continuing.</p>
+    <p class="rq-note" lang="fil">Gumagamit kayo ng pansamantalang password. Palitan muna ito bago magpatuloy.</p>
+  </div>
+  <form id="pwForm" autocomplete="on"><div class="rq-grid" style="grid-template-columns:1fr">
+    <input type="text" name="username" autocomplete="username" hidden>
+    <label>Current or temporary password<input name="current_password" type="password" autocomplete="current-password" required maxlength="128"></label>
+    <label>New password<input name="new_password" type="password" autocomplete="new-password" required minlength="10" maxlength="128"></label>
+    <label>Type the new password again<input name="confirm" type="password" autocomplete="new-password" required minlength="10" maxlength="128"></label>
+  </div>
+  <p class="rq-note">At least 10 characters, mixing letters with numbers or symbols. Do not reuse a password from another site, and do not share it outside your barangay office.</p>
+  <button type="submit" id="pwSave">Save new password</button>
+  <div id="pwMessage" class="rq-message" role="status" aria-live="polite"></div></form>
+</section>
+<section class="rq-card" id="profileCard" style="max-width:820px" hidden>
+  <h2>Signatory profile</h2>
+  <p class="rq-note">Used to sign your request documents<span id="profileRoleNote"></span>. Each document keeps the name, position and signature it was signed with, even if you change them later.</p>
+  <div id="profileMissing" class="rq-message rq-error" hidden></div>
+  <form id="profileForm"><div class="rq-grid">
+    <label class="rq-wide">Printed name (as it appears under your signature)<input name="profile_name" required minlength="3" maxlength="150" placeholder="Hon. Juan A. Dela Cruz"></label>
+    <label class="rq-wide">Position<input name="profile_position" list="positionList" required minlength="2" maxlength="150" placeholder="Punong Barangay"></label>
+  </div><datalist id="positionList"></datalist>
+  <button type="submit" id="profileSave">Save name and position</button>
+  <div id="profileMessage" class="rq-message" role="status" aria-live="polite"></div></form>
+
+  <h3 style="margin-top:22px">Signature</h3>
+  <div class="bp-two">
+    <form id="sigForm">
+      <p class="rq-note">Sign on clean white paper with a dark pen, then take a clear, well-lit photo or scan (PNG or JPG, up to 3 MB). The paper background is removed automatically.</p>
+      <label>Signature image<input type="file" name="file" accept="image/png,image/jpeg" required></label>
+      <label style="flex-direction:row;align-items:flex-start;gap:8px;font-weight:400;margin-top:10px"><input type="checkbox" name="attest" required style="margin-top:3px">
+        <span>I certify that this is my own signature and that I am authorised to sign requests in this capacity.</span></label>
+      <button type="submit" id="sigSave" style="margin-top:10px">Upload signature</button>
+      <div id="sigMessage" class="rq-message" role="status" aria-live="polite"></div>
+    </form>
+    <div><p class="rq-note">How it will appear on documents:</p><div id="sigPreview" class="pf-preview"></div></div>
+  </div>
+
+  <div id="sealBlock" hidden>
+    <h3 style="margin-top:22px">Barangay seal (optional)</h3>
+    <div class="bp-two">
+      <form id="sealForm"><p class="rq-note">Shown at the top left of your request letters, as on your printed letterhead.</p>
+        <label>Seal image<input type="file" name="file" accept="image/png,image/jpeg" required></label>
+        <button type="submit" id="sealSave" style="margin-top:10px">Upload seal</button>
+        <div id="sealMessage" class="rq-message" role="status" aria-live="polite"></div></form>
+      <div id="sealPreview" class="pf-seal"></div>
+    </div>
+  </div>
+</section>
+</main></body></html>

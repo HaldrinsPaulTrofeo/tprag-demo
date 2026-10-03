@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Service requests | Pagsanjan MAO</title>
+<link rel="stylesheet" href="/static/gov.css"><link rel="stylesheet" href="/static/requests.css"><link rel="stylesheet" href="/static/request-letter.css">
+<script src="/static/site.js" defer></script><script src="/static/request-common.js" defer></script><script src="/static/request-letter.js" defer></script><script src="/static/request-form.js" defer></script><script src="/static/provincial-letter.js" defer></script>
+<style>body{margin:0;background:#f4f6f3;color:#223c2e;font-family:system-ui,sans-serif}.wrap{max-width:1100px;margin:24px auto;padding:0 20px}</style>
+</head><body data-page="request"><main class="wrap" id="main">
+<section class="rq-card" id="requestCard"><p class="rq-note">Municipal Agriculture Office · Pagsanjan</p>
+<h1 id="requestTitle">Request a service or allocation</h1>
+<p id="requestIntro">Submit your barangay’s requirements. Municipal staff will review the request and record the quantity granted and the reason for their decision.</p>
+<div id="profileGate" class="rq-message rq-error" hidden></div>
+<form id="requestForm"><div class="rq-grid">
+<label>Barangay<select name="barangay" required></select></label>
+<label>Category<select name="category"><option value="ANTI_RABIES">Anti-rabies</option><option value="LIVESTOCK">Livestock</option><option value="SEEDS">Seeds</option><option value="FINGERLINGS">Fingerlings</option><option value="INPUTS">Agricultural inputs</option><option value="OTHER">Other</option></select></label>
+<label>Item<input name="item" maxlength="120" placeholder="Vaccine, seed variety, or other item"></label>
+<label>Quantity requested<input name="qty_requested" type="number" min="1" max="10000" step="1" required></label>
+<label>Unit<input name="unit" value="vials" maxlength="24" required readonly></label>
+<label>Request date<input name="request_date" type="date" required></label>
+<label>Needed by<input name="needed_by" type="date"></label>
+<label>Estimated animals (optional)<input name="animals_estimated" type="number" min="0" max="10000000" step="1"></label>
+<label>Estimated households (optional)<input name="households_estimated" type="number" min="0" max="10000000" step="1"></label>
+<label>Requested by<input name="requested_by" maxlength="120"></label>
+<label>Contact number<input name="contact_no" maxlength="40" type="tel"></label>
+<label id="sourceField" hidden>Source<select name="source"><option value="online">Online submission</option><option value="letter">Paper letter encoded by staff</option></select></label>
+</div><p id="categoryNote" class="rq-note">Anti-rabies recommendations use recorded vaccination sessions. Estimates are captured as supporting information.</p>
+<p class="rq-note" id="signNote" hidden>Submitting signs this request letter with your e-signature and the date and time. The MAO's signature is added only if the request is approved.</p>
+<button type="submit" id="submitRequest">Submit request</button><div id="requestMessage" class="rq-message" role="status" aria-live="polite"></div></form></section>
+<section class="rq-card" id="previewCard" aria-labelledby="previewTitle"><h2 id="previewTitle">Preview ng liham / Letter preview</h2>
+<p class="rq-note" id="previewIntro">This is the document the office receives. It updates as you fill in the form.</p>
+<div id="letterPreview" style="overflow-x:auto;padding:6px 2px 10px"></div></section>
+<section class="rq-card" id="provCard" hidden aria-labelledby="provTitle">
+<h2 id="provTitle">Letter to the Provincial Veterinarian</h2>
+<p class="rq-note">Prepare the municipality's anti-rabies request to the Office of the Provincial Veterinarian, then print it or download it as Word. Nothing is sent to the province online.</p>
+<div id="provProfile" class="rq-message rq-error" hidden></div>
+<div class="rq-grid">
+  <label>Format<select id="provTemplate"><option value="schedule">Vaccination schedule (dates and vials per barangay)</option><option value="general">General request for anti-rabies vaccination</option></select></label>
+  <label>Letter date<input id="provDate" type="date" required></label>
+  <label style="justify-content:flex-end"><span><input id="provSign" type="checkbox" checked> Include my e-signature</span></label>
+  <label>Addressee<input id="provName" maxlength="150" required></label>
+  <label>Title<input id="provTitleField" maxlength="150" required></label>
+  <label>Office<input id="provOffice" maxlength="150"></label>
+  <label class="rq-wide" id="provSubjectField" hidden>Subject<input id="provSubject" maxlength="200"></label>
+  <label>Salutation<input id="provSalutation" maxlength="60"></label>
+  <label>Closing<input id="provClosing" maxlength="60"></label>
+  <label class="rq-wide">Body (leave a blank line between paragraphs)<textarea id="provBody" maxlength="4000" rows="5"></textarea></label>
+</div>
+<div id="provSchedule">
+  <h3 style="margin-top:18px">Schedule</h3>
+  <div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Barangay</th><th>Session date</th><th>Vials</th><th></th></tr></thead><tbody id="provRows"></tbody></table></div>
+  <div class="rq-actions"><button type="button" id="provAdd" class="secondary">Add barangay</button></div>
+  <details id="provFromRequests" style="margin-top:12px"><summary>Add from barangay anti-rabies requests</summary>
+    <p class="rq-note">Uses each barangay's requested quantity and needed-by date. Declined requests are not listed. Check the dates before printing.</p>
+    <div id="provRequestList"></div>
+    <button type="button" id="provUseRequests" class="secondary">Add selected to schedule</button>
+  </details>
+</div>
+<div class="rq-actions" style="margin-top:16px"><button type="button" id="provPrint">Print / Save as PDF</button><button type="button" id="provDocx" class="secondary">Download Word (.docx)</button></div>
+<div id="provMessage" class="rq-message" role="status" aria-live="polite"></div>
+<h3>Preview</h3>
+<div id="provPreview" style="overflow-x:auto;padding:6px 2px 10px"></div>
+</section>
+<section class="rq-card" id="myRequests" hidden><div class="rq-head"><h2>Your barangay’s requests</h2><button type="button" id="refreshMine" class="secondary">Refresh</button></div>
+<div id="mineMessage" role="status"></div><div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>ID / Date</th><th>Category / Item</th><th>Requested</th><th>Recommended</th><th>Granted</th><th>Status / Reason</th><th>Document</th></tr></thead><tbody id="mineRows"></tbody></table></div>
+<div class="pager"><button type="button" id="minePrev">Previous</button><span id="minePage"></span><button type="button" id="mineNext">Next</button></div></section>
+</main></body></html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check Your Pet's Vaccination — Pagsanjan</title>
+<style>
+  :root {
+    --ink: #14302b; --field: #1f5048; --field-2: #2c6b60;
+    --paper: #eef2ec; --card: #fff; --line: #d9ddd3; --muted: #6c7670;
+    --amber: #b8791b; --amber-bg: #fbf0db; --red: #a8322a; --red-bg: #f7e2df;
+    --green: #2f7d3f; --green-bg: #e3efe2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--paper); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased;
+  }
+  header.topbar {
+    background: var(--field); color: #f3f1ea; padding: 16px 28px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .brand h1 { font-size: 17px; font-weight: 650; }
+  .brand .loc { font-size: 12.5px; opacity: 0.75; }
+  .navlinks a { color: #d7e4e0; text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; }
+  .navlinks a.active { background: rgba(255,255,255,0.14); color: #fff; }
+
+  .hero { max-width: 620px; margin: 0 auto; padding: 54px 24px 30px; text-align: center; }
+  .hero h2 { font-size: 27px; font-weight: 680; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .hero p { color: var(--muted); font-size: 15px; }
+
+  .lookup { max-width: 640px; margin: 26px auto 0; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 24px; }
+  .lookup select { font: inherit; font-size: 15px; padding: 13px 12px; border: 1px solid var(--line); border-radius: 9px; background: #fff; min-width: 150px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .privacy { text-align: center; font-size: 12.5px; color: var(--muted); margin-top: 10px; padding: 0 24px; }
+  .pets .card { margin-bottom: 14px; }
+  .center { text-align: center; margin-bottom: 12px; }
+  .err.soft { color: var(--ink); background: #f6f4ee; border-radius: 9px; }
+  @media (max-width: 560px) { .lookup input, .lookup select, .lookup .btn { flex: 1 1 100%; } }
+  .lookup input {
+    flex: 1; font: inherit; font-size: 15px; padding: 13px 15px;
+    border: 1px solid var(--line); border-radius: 9px; background: #fff;
+  }
+  .btn {
+    font: inherit; font-size: 14.5px; font-weight: 560; cursor: pointer;
+    border: none; background: var(--field); color: #fff; padding: 13px 22px; border-radius: 9px;
+  }
+  .btn:hover { background: var(--field-2); }
+  .btn:disabled { opacity: 0.55; cursor: default; }
+
+  .result { max-width: 520px; margin: 26px auto 60px; padding: 0 24px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .statusbar { padding: 22px 24px; color: #fff; }
+  .statusbar.OVERDUE { background: var(--red); }
+  .statusbar.PROACTIVE_ALERT_DUE { background: var(--amber); }
+  .statusbar.UP_TO_DATE { background: var(--green); }
+  .statusbar.NEVER_VACCINATED { background: #6c7670; }
+  .statusbar .s-label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; }
+  .statusbar .s-msg { font-size: 20px; font-weight: 640; margin-top: 3px; }
+  .card .body { padding: 20px 24px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; font-size: 14.5px; }
+  .kv .k { color: var(--muted); }
+  .mono { font-variant-numeric: tabular-nums; }
+  .note { margin-top: 16px; padding: 14px 16px; background: #f6f4ee; border-radius: 9px; font-size: 13.5px; color: var(--ink); }
+  .err { text-align: center; color: var(--red); font-size: 14.5px; padding: 14px; }
+  .muted { color: var(--muted); }
+</style>
+
+<link rel="stylesheet" href="/static/gov.css">
+<script src="/static/site.js" defer></script>
+</head>
+<body data-page="citizen">
+<header class="topbar">
+  <div class="brand"><h1>Pet Rabies Check</h1> <span class="loc">Pagsanjan, Laguna</span></div>
+  <nav class="navlinks"><a href="/citizen" class="active">Citizen Lookup</a><a href="/charter">Charter Q&amp;A</a><a href="/checker">Form Checker</a></nav>
+</header>
+
+<div class="hero">
+  <h2>Are your pets' rabies shots up to date?</h2>
+  <p>Enter the pet owner's full name and barangay as registered with the Municipal Agriculture Office.</p>
+  <p lang="fil" style="font-size:13.5px;margin-top:4px">Ilagay ang buong pangalan ng may-ari at barangay para makita ang bakuna kontra-rabies ng inyong mga alagang hayop.</p>
+</div>
+
+<form class="lookup" id="lookupForm" autocomplete="on">
+  <label class="sr" for="nameInput">Owner's full name</label>
+  <input type="text" id="nameInput" name="name" placeholder="Full name, e.g. Juan Dela Cruz" required minlength="3" maxlength="150" autocomplete="name">
+  <label class="sr" for="brgyInput">Barangay</label>
+  <select id="brgyInput" required><option value="">Barangay</option></select>
+  <button class="btn" id="checkBtn" type="submit">Check</button>
+</form>
+<p class="privacy">Only pet names and vaccination dates are shown. Contact details are never displayed here.</p>
+
+<div class="result" id="result" aria-live="polite"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const fmtDate = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-PH", {year: "numeric", month: "long", day: "numeric"}) : "—";
+const friendly = {
+  OVERDUE: {label: "Action needed", msg: "Booster is overdue"},
+  PROACTIVE_ALERT_DUE: {label: "Coming up", msg: "Booster is due soon"},
+  UP_TO_DATE: {label: "All good", msg: "Up to date"},
+  NEVER_VACCINATED: {label: "No record", msg: "No rabies vaccination on record"},
+};
+const advice = {
+  OVERDUE: "Please visit the Pagsanjan Municipal Agriculture Office or the next barangay vaccination for the anti-rabies booster as soon as possible.",
+  PROACTIVE_ALERT_DUE: "The yearly booster is coming up. Plan a visit to the Municipal Agriculture Office or watch for your barangay's vaccination schedule.",
+  UP_TO_DATE: "No action needed right now.",
+  NEVER_VACCINATED: "We have no anti-rabies vaccination on record for this pet. Please visit the Municipal Agriculture Office.",
+};
+function message(text, cls = "err") { $("#result").replaceChildren(el("div", cls, text)); }
+
+function petCard(p) {
+  const f = friendly[p.status] || {label: "Status", msg: p.status || "Unknown"};
+  const card = el("div", "card"), bar = el("div", "statusbar " + (p.status || ""));
+  bar.append(el("div", "s-label", f.label), el("div", "s-msg", f.msg));
+  const body = el("div", "body"), kv = el("div", "kv");
+  const rows = [["Pet", p.pet_name + (p.species ? " (" + p.species + ")" : "")],
+                ["Last rabies shot", fmtDate(p.last_rabies_date)]];
+  if (p.next_due) rows.push([p.status === "OVERDUE" ? "Was due" : "Next booster due", fmtDate(p.next_due)]);
+  for (const [k, v] of rows) kv.append(el("span", "k", k), el("span", "mono", v));
+  body.append(kv, el("div", "note", advice[p.status] || ""));
+  card.append(bar, body);
+  return card;
+}
+
+async function check(e) {
+  e.preventDefault();
+  const full_name = $("#nameInput").value.trim(), barangay = $("#brgyInput").value;
+  if (!full_name || !barangay) { message("Enter the owner's full name and choose a barangay."); return; }
+  $("#checkBtn").disabled = true;
+  message("Checking…", "muted center");
+  try {
+    const r = await fetch("/api/citizen/pet-check", {method: "POST", headers: {"Content-Type": "application/json"},
+                                                      body: JSON.stringify({full_name, barangay})});
+    let d = {}; try { d = await r.json(); } catch {}
+    if (!r.ok) { message(typeof d.detail === "string" ? d.detail : "Please check the name and barangay and try again."); return; }
+    if (!d.pets.length) {
+      message("No registered pets were found for that name in Barangay " + d.barangay +
+              ". Check the spelling (use the name you registered with), or visit the Municipal Agriculture Office to register your pet.", "err soft");
+      return;
+    }
+    const wrap = el("div", "pets");
+    wrap.append(el("p", "muted center", d.pets.length + (d.pets.length === 1 ? " registered pet" : " registered pets") + " found in Barangay " + d.barangay + "."));
+    for (const p of d.pets) wrap.append(petCard(p));
+    $("#result").replaceChildren(wrap);
+  } catch (err) {
+    console.error("pet lookup failed", err);
+    message("Something went wrong. Please try again, or visit the Municipal Agriculture Office.");
+  } finally { $("#checkBtn").disabled = false; }
+}
+$("#lookupForm").addEventListener("submit", check);
+fetch("/api/citizen/barangays").then(r => r.json()).then(d => {
+  for (const b of d.barangays) $("#brgyInput").append(Object.assign(el("option", null, b), {value: b}));
+}).catch(() => message("Could not load the barangay list. Please refresh the page."));
+$("#nameInput").focus();
+</script>
+</body>
+</html>

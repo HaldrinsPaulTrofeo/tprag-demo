@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barangay Portal | Pagsanjan MAO</title>
+<link rel="stylesheet" href="/static/gov.css"><link rel="stylesheet" href="/static/requests.css"><link rel="stylesheet" href="/static/portal.css">
+<script src="/static/site.js" defer></script><script src="/static/request-common.js" defer></script><script src="/static/barangay-home.js" defer></script><script src="/static/barangay-followup.js" defer></script>
+</head><body data-page="barangay"><main class="wrap" id="main">
+
+<section class="rq-card bp-hero">
+  <p class="rq-note">Municipal Agriculture Office · Pagsanjan</p>
+  <h1 id="bpTitle">Barangay portal</h1>
+  <p class="bp-sub">Your barangay's requests, vaccination sessions and pet registration at a glance.<br><span lang="fil">Ang mga kahilingan, bakunahan at rehistro ng alagang hayop ng inyong barangay.</span></p>
+  <div class="rq-actions"><a class="rq-link" href="/request">Submit a new request</a><a class="rq-link secondary" href="/charter">Ask about MAO services</a></div>
+  <div id="bpMessage" class="rq-message" role="status" aria-live="polite"></div>
+</section>
+
+<section class="rq-card" aria-labelledby="reqTitle">
+  <div class="rq-head"><div><h2 id="reqTitle">Your requests</h2><p class="rq-note" lang="fil">Mga kahilingan sa MAO</p></div><a class="rq-link secondary" href="/request">View all</a></div>
+  <div class="bp-stats" id="reqStats"><p class="rq-note">Loading.</p></div>
+  <div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Request</th><th>Category / Item</th><th>Requested</th><th>Granted</th><th>Status</th><th>Office's reason</th></tr></thead><tbody id="reqRows"></tbody></table></div>
+</section>
+
+<div class="bp-two">
+<section class="rq-card" aria-labelledby="estTitle">
+  <h2 id="estTitle">Next anti-rabies session</h2><p class="rq-note" lang="fil">Tantiyang bakuna para sa susunod na bakunahan</p>
+  <div id="estimate"><p class="rq-note">Loading.</p></div>
+</section>
+
+<section class="rq-card" aria-labelledby="petTitle">
+  <h2 id="petTitle">Registered pets</h2><p class="rq-note" lang="fil">Mga nakarehistrong alagang hayop</p>
+  <div id="pets"><p class="rq-note">Loading.</p></div>
+</section>
+</div>
+
+<section class="rq-card" id="followUp" aria-labelledby="fuTitle">
+  <div class="rq-head"><div><h2 id="fuTitle">Pets and owners for follow-up</h2><p class="rq-note" lang="fil">Mga alagang hayop at may-ari na dapat paalalahanan sa bakuna kontra-rabies</p></div></div>
+  <p class="bp-privacy">For official barangay follow-up of anti-rabies vaccination only. Personal information is protected under the Data Privacy Act of 2012 (RA 10173): do not copy, share or post it. Contact numbers are hidden until you choose to show one, and each view is recorded.</p>
+  <div class="bp-tabs" role="tablist" aria-label="Vaccination status">
+    <button type="button" role="tab" data-status="overdue" aria-selected="true">Overdue <span></span></button>
+    <button type="button" role="tab" data-status="due_soon" aria-selected="false">Due soon <span></span></button>
+    <button type="button" role="tab" data-status="never" aria-selected="false">No vaccination record <span></span></button>
+    <button type="button" role="tab" data-status="vaccinated" aria-selected="false">Vaccinated <span></span></button>
+  </div>
+  <div class="rq-controls"><label>Search owner or pet name<input id="fuSearch" type="search" maxlength="80" placeholder="e.g. Dela Cruz or Bantay"></label></div>
+  <div id="fuMessage" class="rq-message" role="status" aria-live="polite"></div>
+  <div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Owner</th><th>Pet</th><th>Last anti-rabies</th><th id="fuDueHead">Overdue since</th><th>Contact</th></tr></thead><tbody id="fuRows"></tbody></table></div>
+  <div class="pager"><button type="button" id="fuPrev" class="secondary">Previous</button><span id="fuPage"></span><button type="button" id="fuNext" class="secondary">Next</button></div>
+</section>
+
+<section class="rq-card" aria-labelledby="sesTitle">
+  <h2 id="sesTitle">Past vaccination sessions</h2><p class="rq-note" lang="fil">Mga nakaraang bakunahan sa inyong barangay</p>
+  <p class="rq-note" id="sesSummary"></p>
+  <div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Date</th><th>Doses given</th><th>Vials used</th><th>Households served</th></tr></thead><tbody id="sesRows"></tbody></table></div>
+</section>
+
+<section class="rq-card bp-how" aria-labelledby="howTitle">
+  <h2 id="howTitle">How the office decides how much each barangay receives</h2>
+  <p>Vaccine supply is limited, so the office does not split it by guesswork. For each anti-rabies request, the system recommends the <strong>smallest</strong> of three numbers:</p>
+  <ol>
+    <li><strong>What past sessions needed</strong>: the number of vials that was enough for 3 out of 4 recorded sessions (your barangay's own sessions once it has at least six, otherwise all of Pagsanjan's).</li>
+    <li><strong>What is left in supply</strong> after barangays ahead in the queue are served in full.</li>
+    <li><strong>What you requested.</strong></li>
+  </ol>
+  <p>If supply cannot cover a full session, the request is deferred to the next delivery instead of being given a token amount. The Municipal Agriculture Office makes the final decision and records its reason, which you can see above.</p>
+  <p class="rq-note">Livestock, seeds, fingerlings and other inputs are recorded and reviewed by the office directly; there is no past data yet to base a recommendation on.</p>
+</section>
+
+</main></body></html>

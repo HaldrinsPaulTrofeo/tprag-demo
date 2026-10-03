@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Registry · Pagsanjan Companion Animal Services — Staff</title>
+<style>
+  :root {
+    --ink: #14302b;
+    --field: #1f5048;       /* deep teal-green: agriculture + health */
+    --field-2: #2c6b60;
+    --paper: #f6f4ee;
+    --card: #ffffff;
+    --line: #dcd9cf;
+    --amber: #b8791b;       /* due soon */
+    --amber-bg: #fbf0db;
+    --red: #a8322a;         /* overdue */
+    --red-bg: #f7e2df;
+    --green: #2f7d3f;       /* up to date */
+    --green-bg: #e3efe2;
+    --muted: #6c7670;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header.topbar {
+    background: var(--field);
+    color: #f3f1ea;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand h1 { font-size: 19px; font-weight: 650; letter-spacing: -0.01em; }
+  .brand .loc { font-size: 13px; opacity: 0.75; font-weight: 400; }
+  .navlinks a {
+    color: #d7e4e0; text-decoration: none; font-size: 13px;
+    padding: 6px 12px; border-radius: 6px; font-weight: 500;
+  }
+  .navlinks a.active { background: rgba(255,255,255,0.14); color: #fff; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 26px 28px 60px; }
+
+  /* Stat strip */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px;
+  }
+  .stat .n { font-size: 28px; font-weight: 680; letter-spacing: -0.02em; }
+  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .stat.alert { border-color: var(--red); }
+  .stat.alert .n { color: var(--red); }
+
+  .section-h {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 30px 0 14px;
+  }
+  .section-h h2 { font-size: 16px; font-weight: 640; }
+  .section-h .hint { font-size: 13px; color: var(--muted); }
+
+  /* Overdue hero panel */
+  .hero {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    border-radius: 10px; overflow: hidden;
+  }
+  .hero .row {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 14px; align-items: center;
+    padding: 14px 18px; border-top: 1px solid var(--line);
+  }
+  .hero .row:first-child { border-top: none; }
+  .hero .who { font-weight: 600; }
+  .hero .sub { font-size: 12.5px; color: var(--muted); }
+  .pill {
+    display: inline-block; font-size: 11.5px; font-weight: 600;
+    padding: 3px 9px; border-radius: 100px;
+  }
+  .pill.OVERDUE { background: var(--red-bg); color: var(--red); }
+  .pill.PROACTIVE_ALERT_DUE { background: var(--amber-bg); color: var(--amber); }
+  .pill.UP_TO_DATE { background: var(--green-bg); color: var(--green); }
+  .pill.NEVER_VACCINATED { background: #eceae3; color: var(--muted); }
+
+  .btn {
+    font: inherit; font-size: 13px; font-weight: 550; cursor: pointer;
+    border: 1px solid var(--field); background: var(--field); color: #fff;
+    padding: 8px 14px; border-radius: 7px;
+  }
+  .btn:hover { background: var(--field-2); }
+  .btn.ghost { background: transparent; color: var(--field); }
+  .btn.ghost:hover { background: #eef2f0; }
+  .btn.small { padding: 5px 10px; font-size: 12px; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  /* Toolbar */
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .toolbar input, .toolbar select {
+    font: inherit; font-size: 13px; padding: 8px 11px;
+    border: 1px solid var(--line); border-radius: 7px; background: #fff;
+  }
+  .toolbar input { min-width: 220px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  thead th {
+    text-align: left; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--muted); font-weight: 600;
+    padding: 11px 14px; border-bottom: 1px solid var(--line); background: #faf9f5;
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #ededea; font-size: 13.5px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #faf9f4; cursor: pointer; }
+  .mono { font-variant-numeric: tabular-nums; }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(20,30,28,0.45);
+    display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 12px; width: 100%; max-width: 560px;
+    max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal h3 { padding: 18px 22px; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .modal .body { padding: 20px 22px; }
+  .modal .foot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 5px; font-weight: 550; }
+  .field input { width: 100%; font: inherit; font-size: 14px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 13.5px; margin-bottom: 16px; }
+  .kv .k { color: var(--muted); }
+  .hist { font-size: 13px; }
+  .hist .h-row { padding: 9px 0; border-top: 1px solid #ededea; display: flex; justify-content: space-between; gap: 12px; }
+  .hist .h-row:first-child { border-top: none; }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 8px;
+    font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 80;
+  }
+  .toast.show { opacity: 1; }
+  .empty { padding: 26px; text-align: center; color: var(--muted); font-size: 13.5px; }
+
+  /* Forecast panel */
+  .fc-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .fc-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .fc-tab {
+    font: inherit; font-size: 12.5px; font-weight: 550; cursor: pointer;
+    padding: 6px 13px; border-radius: 100px; border: 1px solid var(--line);
+    background: #fff; color: var(--muted);
+  }
+  .fc-tab.on { background: var(--field); border-color: var(--field); color: #fff; }
+  .fc-chart { position: relative; height: 300px; }
+  .fc-meta { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px;
+             padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; }
+  .fc-meta .m .k { color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .fc-meta .m .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .fc-note { margin-top: 12px; padding: 10px 13px; background: var(--amber-bg);
+             border-left: 3px solid var(--amber); border-radius: 5px;
+             font-size: 12.5px; color: #6d4a10; }
+  .fc-empty { padding: 30px 20px; text-align: center; }
+  .fc-empty .big { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .fc-empty .sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .fc-bar { height: 7px; background: #ececE6; border-radius: 100px; overflow: hidden; margin: 14px auto 8px; max-width: 320px; }
+  .fc-bar > div { height: 100%; background: var(--field-2); }
+  table.fc-metrics { margin-top: 14px; border: 1px solid var(--line); }
+  table.fc-metrics td, table.fc-metrics th { font-size: 12.5px; padding: 8px 12px; }
+  table.fc-metrics tbody tr:hover { background: transparent; cursor: default; }
+  .fc-best { font-weight: 650; color: var(--green); }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .hero .row { grid-template-columns: 1fr auto; }
+    .hero .row .cell-hide { display: none; }
+    .col-hide { display: none; }
+  }
+  /* ---- session vial planner ---- */
+  .vp-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px; }
+  .vp-row label { font-size:11.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.04em; display:block; margin-bottom:4px; }
+  .vp-row input, .vp-row select { font:inherit; font-size:13px; padding:6px 9px;
+    border:1px solid var(--line); border-radius:7px; background:#fff; }
+  .vp-out { display:flex; gap:22px; flex-wrap:wrap; align-items:baseline;
+    padding:14px 0 2px; border-top:1px solid var(--line); }
+  .vp-big { font-size:30px; font-weight:650; font-variant-numeric:tabular-nums; }
+  .vp-big small { font-size:13px; font-weight:500; color:var(--muted); margin-left:5px; }
+  .vp-tbl { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+  .vp-tbl th { text-align:left; font-size:11.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.04em; padding:6px 10px 6px 0; font-weight:550; }
+  .vp-tbl td { padding:6px 10px 6px 0; font-variant-numeric:tabular-nums; border-top:1px solid var(--line); }
+  .vp-tbl tr.on td { font-weight:650; color:var(--field); }
+  .vp-lines { margin-top:12px; padding:10px 13px; background:#f6f8f7; border:1px solid var(--line);
+    border-radius:8px; font-size:13px; font-variant-numeric:tabular-nums; white-space:pre-line; }
+  /* ---- pagination ---- */
+  .pager { display:flex; gap:8px; align-items:center; justify-content:flex-end;
+    margin-top:12px; font-size:13px; color:var(--muted); }
+  .pager.hide { display:none; }
+  .pager button { font:inherit; font-size:12.5px; padding:5px 11px; cursor:pointer;
+    border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--field); }
+  .pager button:disabled { opacity:.4; cursor:default; color:var(--muted); }
+  /* ---- stray badge ---- */
+  .stray { display:inline-block; padding:1px 7px; border-radius:100px; font-size:11px;
+    font-weight:600; background:#eceae3; color:var(--muted); }
+  /* ---- charter card ---- */
+  .xcard { background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:18px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  .xcard .t { font-weight:640; font-size:14.5px; margin-bottom:3px; }
+  .xcard .d { font-size:13px; color:var(--muted); line-height:1.55; }
+  @media print { .noprint { display:none !important; } }
+</style>
+
+<link rel="stylesheet" href="/static/gov.css">
+<script src="/static/site.js" defer></script>
+</head>
+<body data-page="registry">
+<header class="topbar">
+  <div class="brand">
+    <h1>Companion Animal Services</h1>
+    <span class="loc">Pagsanjan, Laguna</span>
+  </div>
+  <nav class="navlinks">
+    <a href="/">Staff Dashboard</a>
+    <a href="/registry" class="active">Pet Registry</a>
+    <a href="/verify">Card Verification</a>
+    <a href="/charter">Charter Q&amp;A</a>
+    <a href="/citizen">Citizen Lookup</a>
+    <a href="/checker">Form Checker</a>
+    <a href="#" id="logout">Log out</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <!-- Full registry -->
+  <div class="section-h">
+    <h2>Pet registry</h2>
+    <button class="btn" id="addPet">Register pet</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search owner, pet, ID, barangay…">
+    <span class="hint" id="regCount"></span>
+    <select id="barangayFilter"><option value="">All barangays</option></select>
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="OVERDUE">Overdue</option>
+      <option value="PROACTIVE_ALERT_DUE">Due soon</option>
+      <option value="UP_TO_DATE">Up to date</option>
+      <option value="NEVER_VACCINATED">Never vaccinated</option>
+    </select>
+    <button class="btn small ghost noprint" id="printReport">Print report</button>
+    <button class="btn small ghost noprint" id="printReportUTD">Print up-to-date only</button>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Pet</th><th class="col-hide">Owner</th><th class="col-hide">Barangay</th>
+      <th>Last rabies</th><th>Status</th>
+    </tr></thead>
+    <tbody id="rows"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+  </table>
+  <div class="pager hide" id="petPager"></div>
+
+  <!-- Pet owners -->
+  <div class="section-h">
+    <h2>Pet owners</h2>
+    <button class="btn" id="addOwner">Add owner</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" id="ownerSearch" placeholder="Search name, barangay, contact…">
+    <span class="hint" id="ownerCount"></span>
+    <select id="ownerBarangay"><option value="">All barangays</option></select>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Name</th><th>Contact no.</th><th class="col-hide">Barangay</th>
+      <th>Pets</th><th></th>
+    </tr></thead>
+    <tbody id="ownerRows"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+  </table>
+  <div class="pager hide" id="ownerPager"></div>
+</div>
+
+<!-- Owner edit/add modal -->
+<div class="modal-bg" id="ownerBg">
+  <div class="modal">
+    <h3 id="fTitle">Edit owner</h3>
+    <div class="body">
+      <input type="hidden" id="fId">
+      <div class="field"><label>First name</label><input id="fFirst"></div>
+      <div class="field"><label>Last name</label><input id="fLast"></div>
+      <div class="field"><label>Contact number</label><input id="fContact" placeholder="09XXXXXXXXX"></div>
+      <div class="field"><label>Barangay</label><input id="fBarangay"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeOwner()">Cancel</button>
+      <button class="btn ghost" id="fDelete" style="color:var(--red);border-color:var(--red)">Delete</button>
+      <button class="btn" id="fSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail / action modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="mTitle">Pet detail</h3>
+    <div class="body" id="mBody"></div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+      <button class="btn ghost" id="mDelBtn" style="color:var(--red);border-color:var(--red)">Remove pet</button>
+      <button class="btn ghost" id="mEditBtn">Edit pet</button>
+      <button class="btn" id="mVaxBtn">Record vaccination</button>
+    </div>
+  </div>
+</div>
+
+<!-- Record vaccination modal -->
+<div class="modal-bg" id="vaxBg">
+  <div class="modal">
+    <h3>Record vaccination</h3>
+    <div class="body">
+      <div class="field"><label>Pet ID</label><input id="vId" readonly></div>
+      <div class="field"><label>Date vaccinated</label><input id="vDate" type="date"></div>
+      <div class="field"><label>Vaccine used</label><input id="vVaccine" value="RABISIN"></div>
+      <div class="field"><label>Disease (optional)</label><input id="vDisease" placeholder="e.g. Rabies"></div>
+      <div class="field"><label>Technician name</label><input id="vTech" placeholder="Full name"></div>
+      <div class="field"><label>Batch / lot no. (optional)</label><input id="vBatch"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeVax()">Cancel</button>
+      <button class="btn" id="vSave">Save record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Register pet modal -->
+<div class="modal-bg" id="addPetBg">
+  <div class="modal">
+    <h3>Register pet</h3>
+    <div class="body">
+      <!-- Strays are vaccinated during barangay drives but have no owner to
+           record. Barangay normally comes from the owner, so a stray carries its
+           own (where it was found / vaccinated). See migrate_stray.py. -->
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;">
+          <input type="checkbox" id="apStray" style="width:auto;margin:0;">
+          <span>This is a stray — no owner</span>
+        </label>
+      </div>
+      <div class="field" id="apStrayBrgyWrap" style="display:none;">
+        <label>Barangay where found / vaccinated</label>
+        <input id="apStrayBrgy" placeholder="e.g. SAMPALOC"
+               style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+      </div>
+      <div class="field" id="apOwnerWrap" style="position:relative;">
+        <label>Owner — type to search existing owners</label>
+        <input id="apOwnerSearch" autocomplete="off" placeholder="Type a name or barangay…"
+               style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+        <input type="hidden" id="apOwner">
+        <div id="apOwnerList" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:10;
+             background:#fff;border:1px solid var(--line);border-radius:8px;margin-top:4px;max-height:200px;
+             overflow-y:auto;box-shadow:0 6px 18px rgba(0,0,0,0.12);"></div>
+        <div id="apOwnerChosen" style="display:none;margin-top:6px;font-size:13px;color:var(--green);font-weight:550;"></div>
+      </div>
+      <div class="field"><label>Pet ID <span style="font-weight:400;text-transform:none;">— leave blank to auto-generate</span></label><input id="apId" placeholder="auto (P0001, P0002…)"></div>
+      <div class="field"><label>Pet name</label><input id="apName"></div>
+      <div class="field"><label>Species</label>
+        <select id="apSpecies" style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+          <option>Dog</option><option>Cat</option><option>Other</option>
+        </select></div>
+      <div class="field"><label>Breed</label><input id="apBreed" placeholder="e.g. ASPIN, PUSPIN, LABRADOR"></div>
+      <div class="field"><label>Sex</label>
+        <select id="apSex" style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+          <option value="M">M</option><option value="F">F</option><option value="MX">MX</option>
+        </select></div>
+      <div class="field"><label>Age (years)</label><input id="apYears" type="number" min="0" value="0"></div>
+      <div class="field"><label>Age (months)</label><input id="apMonths" type="number" min="0" max="11" value="0"></div>
+      <div class="field"><label>Colour / markings</label><input id="apColor" placeholder="e.g. BROWN WITH WHITE CHEST"></div>
+      <div class="field"><label>Date registered</label><input id="apRegDate" type="date"></div>
+      <div class="field" style="display:flex;align-items:center;gap:9px;">
+        <input type="checkbox" id="apFixed" style="width:auto;margin:0;">
+        <label for="apFixed" style="margin:0;">Spayed / neutered</label>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeAddPet()">Cancel</button>
+      <button class="btn" id="apSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pet edit modal -->
+<div class="modal-bg" id="petEditBg">
+  <div class="modal">
+    <h3>Edit pet</h3>
+    <div class="body">
+      <input type="hidden" id="peId">
+      <div class="field"><label>Pet name</label><input id="peName"></div>
+      <div class="field"><label>Species</label>
+        <select id="peSpecies" style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+          <option>Dog</option><option>Cat</option><option>Other</option>
+        </select></div>
+      <div class="field"><label>Breed</label><input id="peBreed"></div>
+      <div class="field"><label>Sex</label>
+        <select id="peSex" style="width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;">
+          <option value="M">M</option><option value="F">F</option><option value="MX">MX</option>
+        </select></div>
+      <div class="field"><label>Age (years)</label><input id="peYears" type="number" min="0"></div>
+      <div class="field"><label>Age (months)</label><input id="peMonths" type="number" min="0" max="11"></div>
+      <div class="field"><label>Colour / markings</label><input id="peColor"></div>
+      <div class="field" style="display:flex;align-items:center;gap:9px;">
+        <input type="checkbox" id="peFixed" style="width:auto;margin:0;">
+        <label for="peFixed" style="margin:0;">Spayed / neutered</label>
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closePetEdit()">Cancel</button>
+      <button class="btn" id="peSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vaccination edit modal -->
+<div class="modal-bg" id="vaxEditBg">
+  <div class="modal">
+    <h3>Edit vaccination record</h3>
+    <div class="body">
+      <input type="hidden" id="veRecordId">
+      <div class="field"><label>Date vaccinated</label><input id="veDate" type="date"></div>
+      <div class="field"><label>Vaccine used</label><input id="veVaccine"></div>
+      <div class="field"><label>Disease</label><input id="veDisease"></div>
+      <div class="field"><label>Technician name</label><input id="veTech"></div>
+      <div class="field"><label>Batch / lot no.</label><input id="veBatch"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeVaxEdit()">Cancel</button>
+      <button class="btn" id="veSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const fmtDate = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-PH", {year:"numeric", month:"short", day:"numeric"}) : "—";
+const label = {OVERDUE:"Overdue", PROACTIVE_ALERT_DUE:"Due soon", UP_TO_DATE:"Up to date", NEVER_VACCINATED:"Never vaccinated"};
+
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// Shared JSON fetch. Every loader below used to do
+//     await (await fetch(url)).json()
+// with no error handling. When an endpoint returns a 500 with a plain-text
+// body, .json() throws, the exception escapes the async function, and the
+// panel keeps its "Loading…" placeholder forever — a hang that looks like a
+// dead app but is really an unreported server error. This surfaces it instead.
+async function fetchJSON(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    let detail = "";
+    try { detail = (await r.json()).detail || ""; } catch (e) { /* non-JSON body */ }
+    throw new Error(detail ? `${r.status} — ${detail}` : `${r.status} ${r.statusText}`);
+  }
+  return r.json();
+}
+
+function panelError(sel, colspan, e) {
+  console.error(sel, e);
+  const msg = `Could not load — ${e.message}`;
+  $(sel).innerHTML = colspan
+    ? `<tr><td colspan="${colspan}" class="empty">${msg}</td></tr>`
+    : `<div class="empty">${msg}</div>`;
+}
+
+async function loadStats() {
+  if (!$("#stats")) return;   // dashboard-only panel
+  let s;
+  try { s = await fetchJSON("/api/stats"); }
+  catch (e) { return panelError("#stats", 0, e); }
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="n mono">${s.total}</div><div class="l">Registered</div>
+      <div class="l" style="text-transform:none;letter-spacing:0;margin-top:4px;">${s.registered_dogs||0} dogs · ${s.registered_cats||0} cats${s.other_species ? ` · ${s.other_species} other` : ""}</div></div>
+    <div class="stat alert"><div class="n mono">${s.overdue}</div><div class="l">Overdue</div></div>
+    <div class="stat"><div class="n mono" style="color:var(--amber)">${s.due_soon}</div><div class="l">Due soon</div></div>
+    <div class="stat"><div class="n mono" style="color:var(--green)">${s.up_to_date}</div><div class="l">Up to date</div></div>
+    <div class="stat"><div class="n mono">${s.never_vaccinated}</div><div class="l">No record</div></div>`;
+}
+
+async function loadOverdue() {
+  let d;
+  try { d = await fetchJSON("/api/overdue"); }
+  catch (e) { return panelError("#overdue", 0, e); }
+  const el = $("#overdue");
+  if (!d.count) { el.innerHTML = `<div class="empty">No pets need attention right now.</div>`; return; }
+  el.innerHTML = d.pets.map(a => `
+    <div class="row">
+      <div>
+        <div class="who">${a.pet_name || a.pet_id} <span class="sub">· ${a.species||""}${a.breed ? ` (${a.breed})` : ""}</span></div>
+        <div class="sub">${a.owner_name} · ${a.barangay||"—"}</div>
+      </div>
+      <div class="cell-hide"><span class="sub">Last rabies</span><br>${fmtDate(a.last_rabies_date)}</div>
+      <div><span class="pill ${a.status}">${label[a.status]}</span></div>
+      <div><button class="btn small ghost" onclick="openDetail('${a.pet_id}')">View</button></div>
+    </div>`).join("");
+}
+
+let allRows = [];
+async function loadRegistry() {
+  let d;
+  try { d = await fetchJSON("/api/pets/list"); }
+  catch (e) { return panelError("#rows", 5, e); }
+  allRows = d.pets || [];
+  fillBarangays();
+  petPage = 1;
+  renderRows();
+}
+function renderRows() {
+  const q = $("#search").value.toLowerCase();
+  const sf = $("#statusFilter").value;
+  const bf = $("#barangayFilter").value;
+  let rows = allRows.filter(a => {
+    const hay = `${a.owner_name||""} ${a.pet_name||""} ${a.pet_id} ${a.barangay||""} ${a.breed||""}`.toLowerCase();
+    return (!bf || (a.barangay||"") === bf)
+        && (!q || hay.includes(q)) && (!sf || a.status === sf);
+  });
+  rows.sort((x, y) => (x.barangay||"").localeCompare(y.barangay||"")
+                   || (x.owner_name||"").localeCompare(y.owner_name||""));
+  $("#regCount").textContent = `${rows.length} of ${allRows.length}`;
+  // Clamp the page in case a filter shrank the result set under the cursor.
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  if (petPage > totalPages) petPage = totalPages;
+  renderPager("#petPager", rows.length, petPage, (n) => { petPage = n; renderRows(); });
+  rows = rows.slice((petPage - 1) * PAGE_SIZE, petPage * PAGE_SIZE);
+  $("#rows").innerHTML = rows.length ? rows.map(a => `
+    <tr onclick="openDetail('${a.pet_id}')">
+      <td><strong>${a.pet_name || a.pet_id}</strong><br><span class="sub mono">${a.pet_id} · ${a.species||""}${a.breed ? ` · ${a.breed}` : ""}</span></td>
+      <td class="col-hide">${a.is_stray ? '<span class="stray">Stray</span>' : (a.owner_name || "—")}</td>
+      <td class="col-hide">${a.barangay||"—"}</td>
+      <td class="mono">${fmtDate(a.last_rabies_date)}</td>
+      <td><span class="pill ${a.status}">${label[a.status]}</span></td>
+    </tr>`).join("") : `<tr><td colspan="5" class="empty">No pets match.</td></tr>`;
+}
+
+async function openDetail(id) {
+  let a;
+  try { a = await fetchJSON(`/api/pet/${id}`); }
+  catch (e) {
+    console.error("openDetail", e);
+    toast(`Could not open that record — ${e.message}`);
+    return;
+  }
+  window._currentPet = a;
+  $("#mTitle").textContent = `${a.pet_name || a.pet_id} — ${a.species || ""}`;
+  $("#mBody").innerHTML = `
+    <div class="kv">
+      <span class="k">Owner</span><span>${a.owner_name}</span>
+      <span class="k">Contact</span><span class="mono">${a.contact_no || "—"}</span>
+      <span class="k">Barangay</span><span>${a.barangay || "—"}</span>
+      <span class="k">Pet ID</span><span class="mono">${a.pet_id}</span>
+      <span class="k">Breed</span><span>${a.breed || "—"}</span>
+      <span class="k">Sex / age</span><span>${a.sex || "—"} · ${a.age_years||0}y ${a.age_months||0}m</span>
+      <span class="k">Colour / markings</span><span>${a.color_markings || "—"}</span>
+      <span class="k">Spayed / neutered</span><span>${a.is_spayed_neutered ? "Yes" : "No"}</span>
+      <span class="k">Date registered</span><span class="mono">${fmtDate(a.date_registered)}</span>
+      <span class="k">Rabies status</span><span><span class="pill ${a.status}">${label[a.status]}</span></span>
+      <span class="k">Last rabies</span><span class="mono">${fmtDate(a.last_rabies_date)}</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Vaccination history</div>
+    <div class="hist">${a.history.length ? a.history.map(h => `
+      <div class="h-row">
+        <span>${fmtDate(h.date_vaccinated)} · ${h.vaccine_used||h.disease||"—"}<br><span class="sub">${h.technician_name||""}</span></span>
+        <span style="white-space:nowrap">
+          <button class="btn small ghost" onclick='editVax(${JSON.stringify(h)}, "${a.pet_id}")'>Edit</button>
+          <button class="btn small ghost" style="color:var(--red)" onclick='delVax("${h.record_id}", "${a.pet_id}")'>×</button>
+        </span>
+      </div>
+    `).join("") : `<div class="empty">No vaccination records.</div>`}</div>`;
+  $("#mVaxBtn").onclick = () => { closeModal(); openVax(a.pet_id); };
+  $("#mEditBtn").onclick = () => { closeModal(); openPetEdit(a); };
+  $("#mDelBtn").onclick = async () => {
+    if (!confirm(`Remove pet '${a.pet_name||a.pet_id}'? Its history is kept but it leaves the active registry.`)) return;
+    const r = await fetch(`/api/pets/${a.pet_id}`, {method:"DELETE"});
+    const d = await r.json();
+    if (r.ok) { toast("Pet removed ✓"); closeModal(); refreshAll(); }
+    else { toast(d.detail || "Could not remove."); }
+  };
+  $("#modalBg").classList.add("show");
+}
+function closeModal(){ $("#modalBg").classList.remove("show"); }
+
+// ---- Pet edit ----
+function openPetEdit(a) {
+  $("#peId").value = a.pet_id;
+  $("#peName").value = a.pet_name || "";
+  $("#peSpecies").value = a.species || "Dog";
+  $("#peBreed").value = a.breed || "";
+  $("#peSex").value = a.sex || "MX";
+  $("#peYears").value = a.age_years || 0;
+  $("#peMonths").value = a.age_months || 0;
+  $("#peColor").value = a.color_markings || "";
+  $("#peFixed").checked = !!a.is_spayed_neutered;
+  $("#petEditBg").classList.add("show");
+}
+function closePetEdit(){ $("#petEditBg").classList.remove("show"); }
+$("#peSave").addEventListener("click", async () => {
+  const id = $("#peId").value;
+  const payload = {
+    species: $("#peSpecies").value, breed: $("#peBreed").value.trim(),
+    pet_name: $("#peName").value.trim(), sex: $("#peSex").value,
+    age_years: parseInt($("#peYears").value)||0, age_months: parseInt($("#peMonths").value)||0,
+    color_markings: $("#peColor").value.trim(), is_spayed_neutered: $("#peFixed").checked,
+  };
+  $("#peSave").disabled = true;
+  try {
+    const r = await fetch(`/api/pets/${id}`, {method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast("Pet updated ✓"); closePetEdit(); refreshAll(); }
+    else { toast(d.detail || "Could not update."); }
+  } catch(e){ toast("Network error."); }
+  $("#peSave").disabled = false;
+});
+
+// ---- Vaccination edit/delete ----
+function editVax(h, petId) {
+  $("#veRecordId").value = h.record_id;
+  $("#veDate").value = h.date_vaccinated || "";
+  $("#veVaccine").value = h.vaccine_used || "RABISIN";
+  $("#veDisease").value = h.disease || "";
+  $("#veTech").value = h.technician_name || "";
+  $("#veBatch").value = h.batch_lot_no || "";
+  window._vaxBackPet = petId;
+  closeModal();
+  $("#vaxEditBg").classList.add("show");
+}
+function closeVaxEdit(){ $("#vaxEditBg").classList.remove("show"); }
+$("#veSave").addEventListener("click", async () => {
+  const id = $("#veRecordId").value;
+  const payload = {
+    date_vaccinated: $("#veDate").value, vaccine_used: $("#veVaccine").value,
+    disease: $("#veDisease").value, technician_name: $("#veTech").value, batch_lot_no: $("#veBatch").value,
+  };
+  $("#veSave").disabled = true;
+  try {
+    const r = await fetch(`/api/vaccination/${id}`, {method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast("Record updated ✓"); closeVaxEdit(); refreshAll(); }
+    else { toast(d.detail || "Could not update."); }
+  } catch(e){ toast("Network error."); }
+  $("#veSave").disabled = false;
+});
+async function delVax(recordId, petId) {
+  if (!confirm("Remove this vaccination record? It will be hidden but kept in history.")) return;
+  const r = await fetch(`/api/vaccination/${recordId}`, {method:"DELETE"});
+  const d = await r.json();
+  if (r.ok) { toast("Record removed ✓"); openDetail(petId); }
+  else { toast(d.detail || "Could not remove."); }
+}
+
+function openVax(id) {
+  $("#vId").value = id;
+  $("#vDate").value = new Date().toISOString().slice(0,10);
+  $("#vVaccine").value = "RABISIN"; $("#vDisease").value = "";
+  $("#vTech").value = ""; $("#vBatch").value = "";
+  $("#vaxBg").classList.add("show");
+}
+function closeVax(){ $("#vaxBg").classList.remove("show"); }
+
+$("#vSave").onclick = async () => {
+  const payload = {
+    pet_id: $("#vId").value,
+    date_vaccinated: $("#vDate").value,
+    vaccine_used: $("#vVaccine").value,
+    disease: $("#vDisease").value,
+    technician_name: $("#vTech").value,
+    batch_lot_no: $("#vBatch").value,
+  };
+  $("#vSave").disabled = true;
+  try {
+    const r = await fetch("/api/vaccination", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast("Vaccination recorded ✓"); closeVax(); refreshAll(); }
+    else { toast(d.detail || "Could not save."); }
+  } catch(e) { toast("Network error."); }
+  $("#vSave").disabled = false;
+};
+
+// "Send all reminders" is a DASHBOARD control. Wiring it unconditionally here
+// threw "Cannot set properties of null" at top level, which killed the rest of
+// the script — including the refreshAll() that populates both tables. Guarded
+// so this file can share the same JS block as the dashboard.
+if ($("#sendAll")) {
+  $("#sendAll").onclick = async () => {
+    if (!confirm("Send reminders to all overdue / due-soon owners?\n(Dry-run unless live SMS is enabled on the server.)")) return;
+    $("#sendAll").disabled = true; $("#sendAll").textContent = "Sending…";
+    try {
+      const r = await fetch("/api/send-reminders", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+      const d = await r.json();
+      const okN = d.results.filter(x=>x.ok).length;
+      toast(`${okN} of ${d.count} reminders processed`);
+    } catch(e){ toast("Send failed."); }
+    $("#sendAll").disabled = false; $("#sendAll").textContent = "Send all reminders";
+  };
+  }
+
+// No forecast panel on this page — that lives on the dashboard.
+function refreshAll(){ loadRegistry(); loadOwners(); }
+
+// ---- Pet owners ----
+let allOwners = [];
+async function loadOwners() {
+  let d;
+  try { d = await fetchJSON("/api/owners"); }
+  catch (e) { return panelError("#ownerRows", 5, e); }
+  allOwners = d.owners || [];
+  fillOwnerBarangays();
+  ownerPage = 1;
+  renderOwners();
+}
+function renderOwners() {
+  const q = ($("#ownerSearch").value || "").toLowerCase();
+  const bf = $("#ownerBarangay").value;
+  let rows = allOwners.filter(f =>
+    (!bf || (f.barangay||"") === bf) &&
+    (!q || `${f.first_name} ${f.last_name} ${f.barangay||""} ${f.contact_no||""}`.toLowerCase().includes(q)));
+  rows.sort((x, y) => (x.barangay||"").localeCompare(y.barangay||"")
+                   || `${x.last_name} ${x.first_name}`.localeCompare(`${y.last_name} ${y.first_name}`));
+  $("#ownerCount").textContent = `${rows.length} of ${allOwners.length}`;
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  if (ownerPage > totalPages) ownerPage = totalPages;
+  renderPager("#ownerPager", rows.length, ownerPage, (n) => { ownerPage = n; renderOwners(); });
+  rows = rows.slice((ownerPage - 1) * PAGE_SIZE, ownerPage * PAGE_SIZE);
+  $("#ownerRows").innerHTML = rows.length ? rows.map(f => `
+    <tr>
+      <td><strong>${f.first_name} ${f.last_name}</strong></td>
+      <td class="mono">${f.contact_no || "—"}</td>
+      <td class="col-hide">${f.barangay || "—"}</td>
+      <td class="mono">${f.pet_count}</td>
+      <td style="text-align:right"><button class="btn small ghost" onclick='editOwner(${f.owner_id})'>Edit</button></td>
+    </tr>`).join("") : `<tr><td colspan="5" class="empty">No owners match.</td></tr>`;
+}
+function editOwner(id) {
+  const f = allOwners.find(x => x.owner_id === id);
+  if (!f) return;
+  $("#fTitle").textContent = "Edit owner";
+  $("#fId").value = f.owner_id;
+  $("#fFirst").value = f.first_name || "";
+  $("#fLast").value = f.last_name || "";
+  $("#fContact").value = f.contact_no || "";
+  $("#fBarangay").value = f.barangay || "";
+  $("#fDelete").style.display = "inline-block";
+  $("#fDelete").textContent = `Remove${f.pet_count ? ` (${f.pet_count} pets)` : ""}`;
+  $("#ownerBg").classList.add("show");
+}
+$("#addOwner").addEventListener("click", () => {
+  $("#fTitle").textContent = "Add owner";
+  $("#fId").value = ""; $("#fFirst").value=""; $("#fLast").value="";
+  $("#fContact").value=""; $("#fBarangay").value="";
+  $("#fDelete").style.display = "none";
+  $("#ownerBg").classList.add("show");
+});
+$("#fDelete").addEventListener("click", async () => {
+  const id = $("#fId").value;
+  if (!id) return;
+  const f = allOwners.find(x => x.owner_id === parseInt(id));
+  if (f && f.pet_count > 0) {
+    toast(`Cannot remove: ${f.first_name} still has ${f.pet_count} pet(s). Remove them first.`);
+    return;
+  }
+  if (!confirm(`Remove ${f.first_name} ${f.last_name} from the active registry? Their records are kept for audit.`)) return;
+  $("#fDelete").disabled = true;
+  try {
+    const r = await fetch(`/api/owners/${id}`, {method:"DELETE"});
+    const d = await r.json();
+    if (r.ok) { toast("Owner removed ✓"); closeOwner(); loadOwners(); }
+    else { toast(d.detail || "Could not delete."); }
+  } catch(e){ toast("Network error."); }
+  $("#fDelete").disabled = false;
+});
+function closeOwner(){ $("#ownerBg").classList.remove("show"); }
+$("#fSave").addEventListener("click", async () => {
+  const id = $("#fId").value;
+  const payload = {
+    first_name: $("#fFirst").value.trim(),
+    last_name: $("#fLast").value.trim(),
+    contact_no: $("#fContact").value.trim(),
+    barangay: $("#fBarangay").value.trim(),
+  };
+  if (!payload.first_name || !payload.last_name) { toast("First and last name are required."); return; }
+  $("#fSave").disabled = true;
+  try {
+    const url = id ? `/api/owners/${id}` : "/api/owners";
+    const method = id ? "PUT" : "POST";
+    const r = await fetch(url, {method, headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast(id ? "Owner updated ✓" : "Owner added ✓"); closeOwner(); loadOwners(); }
+    else { toast(d.detail || "Could not save."); }
+  } catch(e) { toast("Network error."); }
+  $("#fSave").disabled = false;
+});
+$("#ownerSearch").addEventListener("input", () => { ownerPage = 1; renderOwners(); });
+$("#ownerBg").addEventListener("click", (e)=>{ if(e.target.id==="ownerBg") closeOwner(); });
+
+$("#addPet").addEventListener("click", () => {
+  if (!allOwners.length) { toast("Add an owner first — a pet needs an owner."); return; }
+  // reset the searchable owner picker
+  $("#apOwnerSearch").value = ""; $("#apOwner").value = "";
+  $("#apStray").checked = false; $("#apStrayBrgy").value = "";
+  $("#apOwnerWrap").style.display = ""; $("#apStrayBrgyWrap").style.display = "none";
+  $("#apOwnerList").style.display = "none";
+  $("#apOwnerChosen").style.display = "none";
+  $("#apId").value=""; $("#apName").value=""; $("#apSpecies").value="Dog";
+  $("#apBreed").value=""; $("#apSex").value="MX";
+  $("#apYears").value="0"; $("#apMonths").value="0";
+  $("#apColor").value=""; $("#apFixed").checked = false;
+  // Default to today: date_registered drives the ARIMA registration series and
+  // must never be left blank on a new record.
+  $("#apRegDate").value = new Date().toISOString().slice(0,10);
+  $("#addPetBg").classList.add("show");
+  setTimeout(()=>$("#apOwnerSearch").focus(), 50);
+});
+function closeAddPet(){ $("#addPetBg").classList.remove("show"); }
+
+// ---- Searchable owner picker ----
+function renderOwnerMatches() {
+  const q = ($("#apOwnerSearch").value || "").toLowerCase().trim();
+  const list = $("#apOwnerList");
+  if (!q) { list.style.display = "none"; return; }
+  const matches = allOwners.filter(f =>
+    `${f.first_name} ${f.last_name} ${f.barangay||""}`.toLowerCase().includes(q)
+  ).slice(0, 8);  // cap the dropdown so a huge list stays usable
+  if (!matches.length) {
+    list.innerHTML = `<div style="padding:10px 12px;color:var(--muted);font-size:13px;">No matching owner.</div>`;
+    list.style.display = "block";
+    return;
+  }
+  list.innerHTML = matches.map(f => `
+    <div class="owner-opt" data-id="${f.owner_id}"
+         data-label="${f.last_name}, ${f.first_name}"
+         style="padding:9px 12px;cursor:pointer;font-size:13.5px;border-bottom:1px solid #f0efe9;">
+      <strong>${f.last_name}, ${f.first_name}</strong>
+      <span style="color:var(--muted)"> — ${f.barangay||"—"} · ${f.pet_count} pet(s)</span>
+    </div>`).join("");
+  list.style.display = "block";
+  list.querySelectorAll(".owner-opt").forEach(opt => {
+    opt.addEventListener("mouseenter", () => opt.style.background = "#f4f8f4");
+    opt.addEventListener("mouseleave", () => opt.style.background = "#fff");
+    opt.addEventListener("click", () => {
+      $("#apOwner").value = opt.dataset.id;
+      $("#apOwnerSearch").value = opt.dataset.label;
+      $("#apOwnerChosen").textContent = `✓ Owner: ${opt.dataset.label}`;
+      $("#apOwnerChosen").style.display = "block";
+      list.style.display = "none";
+    });
+  });
+}
+$("#apOwnerSearch").addEventListener("input", () => {
+  // typing a new search clears any prior confirmed selection
+  $("#apOwner").value = "";
+  $("#apOwnerChosen").style.display = "none";
+  renderOwnerMatches();
+});
+// hide the list when clicking outside it
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#apOwnerSearch") && !e.target.closest("#apOwnerList")) {
+    $("#apOwnerList").style.display = "none";
+  }
+});
+
+
+// Owner picker and stray barangay are mutually exclusive: a pet is either owned
+// or a stray, and the API rejects both or neither.
+$("#apStray").addEventListener("change", () => {
+  const on = $("#apStray").checked;
+  $("#apOwnerWrap").style.display = on ? "none" : "";
+  $("#apStrayBrgyWrap").style.display = on ? "" : "none";
+  if (on) { $("#apOwner").value = ""; $("#apOwnerSearch").value = "";
+            $("#apOwnerChosen").style.display = "none"; }
+});
+$("#apSave").addEventListener("click", async () => {
+  const stray = $("#apStray").checked;
+  const owner_id = parseInt($("#apOwner").value) || null;
+  const strayBrgy = $("#apStrayBrgy").value.trim();
+  if (!stray && !owner_id) { toast("Pick an owner, or tick “This is a stray”."); return; }
+  if (stray && !strayBrgy) { toast("A stray needs a barangay."); return; }
+  const payload = {
+    pet_id: $("#apId").value.trim(),          // blank -> server auto-generates
+    owner_id: stray ? null : owner_id,
+    is_stray: stray,
+    barangay: stray ? strayBrgy : "",
+    species: $("#apSpecies").value,
+    breed: $("#apBreed").value.trim(),
+    pet_name: $("#apName").value.trim(),
+    sex: $("#apSex").value,
+    age_years: parseInt($("#apYears").value)||0,
+    age_months: parseInt($("#apMonths").value)||0,
+    color_markings: $("#apColor").value.trim(),
+    is_spayed_neutered: $("#apFixed").checked,
+    date_registered: $("#apRegDate").value || null,
+  };
+  $("#apSave").disabled = true;
+  try {
+    const r = await fetch("/api/pets", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast(`Pet registered ✓ (${d.pet_id})`); closeAddPet(); refreshAll(); }
+    else { toast(d.detail || "Could not register."); }
+  } catch(e){ toast("Network error."); }
+  $("#apSave").disabled = false;
+});
+$("#addPetBg").addEventListener("click", (e)=>{ if(e.target.id==="addPetBg") closeAddPet(); });
+
+
+// Escape user-entered text before it goes into the print window. Owner and pet
+// names come straight from the database, so an apostrophe or ampersand would
+// otherwise break the generated HTML. The print report referenced esc() without
+// this page ever defining it, so both buttons threw ReferenceError and appeared
+// to do nothing.
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+
+// ---- Pagination + barangay filter ----
+// A municipality-wide registry runs to thousands of animals across 16
+// barangays. Rendering every row made the table unusable and the page slow, so
+// both tables paginate at 20 and can be narrowed to one barangay.
+const PAGE_SIZE = 20;
+let petPage = 1, ownerPage = 1;
+
+function renderPager(containerId, totalItems, currentPage, onGo) {
+  const el = $(containerId);
+  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+  if (totalItems <= PAGE_SIZE) { el.className = "pager hide"; el.innerHTML = ""; return; }
+  el.className = "pager";
+  const from = (currentPage - 1) * PAGE_SIZE + 1;
+  const to = Math.min(currentPage * PAGE_SIZE, totalItems);
+  el.innerHTML =
+    `<span>${from}–${to} of ${totalItems}</span>
+     <button ${currentPage <= 1 ? "disabled" : ""} data-act="prev">‹ Previous</button>
+     <span>Page ${currentPage} of ${totalPages}</span>
+     <button ${currentPage >= totalPages ? "disabled" : ""} data-act="next">Next ›</button>`;
+  el.onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    onGo(b.dataset.act === "prev" ? currentPage - 1 : currentPage + 1);
+  };
+}
+
+
+function fillOwnerBarangays() {
+  const seen = [...new Set(allOwners.map(f => f.barangay).filter(Boolean))].sort();
+  const sel = $("#ownerBarangay"); const keep = sel.value;
+  sel.innerHTML = '<option value="">All barangays</option>' +
+    seen.map(b => `<option${b === keep ? " selected" : ""}>${b}</option>`).join("");
+}
+function fillBarangays() {
+  const seen = [...new Set(allRows.map(a => a.barangay).filter(Boolean))].sort();
+  const sel = $("#barangayFilter");
+  const keep = sel.value;
+  sel.innerHTML = '<option value="">All barangays</option>' +
+    seen.map(b => `<option${b === keep ? " selected" : ""}>${b}</option>`).join("");
+}
+
+// ---- Print: anti-rabies vaccination report, grouped by owner ----
+// Mirrors the sheet the office already files. Prints whatever the current
+// filter shows, so "print this barangay" and "print current search" both work.
+function printVaccinationReport(upToDateOnly) {
+  const bf = $("#barangayFilter").value;
+  const q  = $("#search").value.toLowerCase();
+  const sf = $("#statusFilter").value;
+  let pets = allRows.filter(a => {
+    const hay = `${a.owner_name||""} ${a.pet_name||""} ${a.pet_id} ${a.barangay||""}`.toLowerCase();
+    return (!bf || (a.barangay||"") === bf) && (!q || hay.includes(q)) && (!sf || a.status === sf);
+  });
+  let titleSuffix = "";
+  if (upToDateOnly) { pets = pets.filter(a => a.status === "UP_TO_DATE"); titleSuffix = " — Up-to-date only"; }
+  if (!pets.length) { toast("No pets to print for that selection."); return; }
+
+  const uniqueB = [...new Set(pets.map(a => a.barangay).filter(Boolean))];
+  const brgyLabel = bf || (uniqueB.length === 1 ? uniqueB[0] : "____________________");
+
+  // Group by owner so an owner's animals print together; strays are grouped last.
+  const groups = new Map();
+  for (const a of pets) {
+    const k = a.is_stray ? "\uFFFFStray (no owner)" : (a.owner_name || "—");
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(a);
+  }
+  const ordered = [...groups.entries()].sort((x, y) => x[0].localeCompare(y[0]));
+
+  // The "#" column numbers OWNERS, not animals, matching the masterlist the
+  // office already keeps (one client number, their animals listed beneath).
+  // Numbering animals but printing the value only on each owner's first row
+  // produced a sequence that jumped 1, 2, 6, 7 and read like a bug.
+  let ownerNo = 0, n = 0, body = "";
+  for (const [owner, list] of ordered) {
+    ownerNo++;
+    list.forEach((a, i) => {
+      n++;
+      body += `<tr>
+        <td>${i === 0 ? ownerNo : ""}</td>
+        <td>${i === 0 ? esc(owner.replace("\uFFFF", "")) : ""}</td>
+        <td>${esc(a.barangay || "")}</td>
+        <td>${esc(a.pet_name || a.pet_id)}</td>
+        <td>${esc(a.species || "")}</td>
+        <td>${esc(a.breed || "")}</td>
+        <td>${esc(a.sex || "")}</td>
+        <td>${fmtDate(a.last_rabies_date)}</td>
+        <td>${esc(a.vaccine_used || "")}</td>
+        <td>${esc(a.technician_name || "")}</td>
+      </tr>`;
+    });
+  }
+
+  const w = window.open("", "_blank");
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+  <title>Anti-Rabies Vaccination Report</title><style>
+    @page { size: A4 landscape; margin: 10mm; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color:#000; }
+    h2 { text-align:center; margin:0 0 2px; font-size:15px; }
+    .sub { text-align:center; font-size:11px; margin-bottom:10px; }
+    table { width:100%; border-collapse:collapse; }
+    th, td { border:1px solid #333; padding:3px 5px; text-align:left; }
+    th { background:#eee; font-size:10.5px; }
+    .sigs { display:flex; gap:40px; margin-top:28px; }
+    .sig { flex:1; text-align:center; }
+    .line { border-top:1px solid #000; padding-top:3px; font-size:10.5px; }
+    @media print { .noprint { display:none; } }
+    .noprint { margin:10px 0; text-align:center; }
+  </style></head><body>
+  <div class="noprint">
+    <button onclick="window.print()">Print / Save as PDF</button>
+    <span style="font-size:12px;color:#555;margin-left:10px;">
+      In the print dialog choose "Save as PDF" to keep a copy.</span>
+  </div>
+  <h2>Municipality of Pagsanjan — Anti-Rabies Vaccination Report${titleSuffix}</h2>
+  <div class="sub">Office of the Municipal Agriculturist · Barangay: <strong>${esc(brgyLabel)}</strong>
+    · ${ownerNo} owner(s), ${n} animal(s) · Printed ${new Date().toLocaleDateString("en-PH")}</div>
+  <table><thead><tr>
+    <th>#</th><th>Owner</th><th>Barangay</th><th>Pet</th><th>Species</th><th>Breed</th>
+    <th>Sex</th><th>Last rabies</th><th>Vaccine</th><th>Vaccinator</th>
+  </tr></thead><tbody>${body}</tbody></table>
+  <div class="sigs">
+    <div class="sig"><div class="line">Prepared by</div></div>
+    <div class="sig"><div class="line">Noted by — OIC-Municipal Agriculturist</div></div>
+  </div></body></html>`);
+  w.document.close();
+}
+$("#printReport").addEventListener("click", () => printVaccinationReport(false));
+$("#printReportUTD").addEventListener("click", () => printVaccinationReport(true));
+$("#barangayFilter").addEventListener("change", () => { petPage = 1; renderRows(); });
+$("#ownerBarangay").addEventListener("change", () => { ownerPage = 1; renderOwners(); });
+
+// Deep link from the dashboard: /registry?pet=P0007 opens that pet directly.
+(() => {
+  const id = new URLSearchParams(location.search).get("pet");
+  if (id) setTimeout(() => openDetail(id), 600);
+})();
+// ---- Auto-UPPERCASE all text inputs to match the all-caps database ----
+// Applies live as staff type, on every text input except passwords/numbers/dates.
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.tagName === "INPUT" && (el.type === "text" || el.type === "" || el.type === "search")) {
+    if (el.id === "apRegDate") return;   // date input: leave the value alone
+    const start = el.selectionStart, end = el.selectionEnd;
+    const up = el.value.toUpperCase();
+    if (el.value !== up) {
+      el.value = up;
+      // keep the cursor where it was so typing isn't disrupted
+      try { el.setSelectionRange(start, end); } catch (_) {}
+    }
+  }
+});
+
+// Logout
+$("#logout").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await fetch("/api/logout", {method:"POST"});
+  window.location.href = "/login";
+});
+
+// If any request returns 401 (session expired), bounce to login.
+const _fetch = window.fetch;
+window.fetch = async (...args) => {
+  const r = await _fetch(...args);
+  if (r.status === 401) { window.location.href = "/login"; }
+  return r;
+};
+
+$("#search").addEventListener("input", () => { petPage = 1; renderRows(); });
+$("#statusFilter").addEventListener("change", () => { petPage = 1; renderRows(); });
+$("#modalBg").addEventListener("click", (e)=>{ if(e.target.id==="modalBg") closeModal(); });
+$("#vaxBg").addEventListener("click", (e)=>{ if(e.target.id==="vaxBg") closeVax(); });
+refreshAll();
+</script>
+</body>
+</html>

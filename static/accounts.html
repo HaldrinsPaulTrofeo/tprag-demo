@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Accounts | Pagsanjan MAO</title>
+<link rel="stylesheet" href="/static/gov.css"><link rel="stylesheet" href="/static/requests.css"><link rel="stylesheet" href="/static/portal.css">
+<script src="/static/site.js" defer></script><script src="/static/request-common.js" defer></script><script src="/static/accounts-admin.js" defer></script>
+</head><body data-page="accounts"><main class="wrap" id="main">
+<section class="rq-card">
+  <div class="rq-head"><div><h1>Accounts</h1><p class="rq-note">Barangay and municipal staff sign-ins. Administrators only.</p></div>
+    <button type="button" id="acRefresh" class="secondary">Refresh</button></div>
+  <div id="acMessage" class="rq-message" role="status" aria-live="polite"></div>
+  <div id="acTemp" hidden>
+    <p><strong>Temporary password for <span id="acTempUser"></span></strong> (shown once):</p>
+    <div class="bp-temp" id="acTempValue"></div>
+    <p class="rq-note">Give it to the account holder in person or in a sealed slip. They must change it at their first sign-in. It cannot be shown again; reset again if it is lost.</p>
+    <button type="button" id="acTempHide" class="secondary">I have recorded it</button>
+  </div>
+  <div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Username</th><th>Role / Barangay</th><th>Status</th><th>Last sign-in</th><th>Actions</th></tr></thead><tbody id="acRows"></tbody></table></div>
+</section>
+<section class="rq-card">
+  <h2>Add an account</h2>
+  <form id="acForm"><div class="rq-grid">
+    <label>Role<select name="role"><option value="barangay">Barangay</option><option value="staff">Municipal staff</option></select></label>
+    <label id="acBrgyField">Barangay<select name="barangay"></select></label>
+    <label>Username<input name="username" required minlength="3" maxlength="80" pattern="[A-Za-z0-9._\-]+" placeholder="brgy.anibong"></label>
+    <label class="rq-wide">Full name or office<input name="full_name" maxlength="150" placeholder="Barangay Anibong (Office of the Punong Barangay)"></label>
+  </div><button type="submit" id="acCreate">Create account with temporary password</button></form>
+</section>
+</main></body></html>

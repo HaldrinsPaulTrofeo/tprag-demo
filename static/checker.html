@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pagsanjan MAO — Pagsusuri ng Aplikasyon</title>
+<style>
+  :root{
+    --ink:#1b2a20; --muted:#5d6f63; --line:#d9e2db; --bg:#f4f7f4;
+    --card:#fff; --brand:#1f6b45; --brand-dark:#164e33;
+    --err:#a32020; --err-bg:#fdeeee; --warn:#8a5a00; --warn-bg:#fff6e5;
+    --info:#1b5a80; --info-bg:#eef6fb; --ok:#1f6b45; --ok-bg:#eaf5ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+  header{background:var(--brand);color:#fff;padding:18px 22px}
+  header h1{margin:0;font-size:19px;font-weight:600}
+  header p{margin:4px 0 0;font-size:13px;opacity:.9}
+  .wrap{max-width:1080px;margin:22px auto;padding:0 18px;
+        display:grid;gap:20px;grid-template-columns:1fr 400px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);
+        border-radius:10px;padding:20px}
+  h2{margin:0 0 4px;font-size:15px;text-transform:uppercase;
+     letter-spacing:.06em;color:var(--brand-dark)}
+  .sub{margin:0 0 16px;font-size:13px;color:var(--muted)}
+  fieldset{border:0;padding:0;margin:0 0 18px}
+  legend{font-weight:600;font-size:13px;color:var(--brand-dark);
+         padding-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+  .grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+  .grid .full{grid-column:1/-1}
+  label{display:block;font-size:12px;font-weight:600;color:var(--muted);
+        margin-bottom:4px}
+  input,select{width:100%;padding:8px 10px;border:1px solid var(--line);
+    border-radius:6px;font:inherit;background:#fff;color:var(--ink)}
+  input:focus,select:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+  .bad{border-color:var(--err);background:var(--err-bg)}
+  .hint{font-size:11px;color:var(--muted);margin-top:3px}
+  button{background:var(--brand);color:#fff;border:0;border-radius:6px;
+    padding:11px 20px;font:inherit;font-weight:600;cursor:pointer}
+  button:hover{background:var(--brand-dark)}
+  button.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .actions{display:flex;gap:10px;align-items:center}
+  .verdict{padding:12px 14px;border-radius:8px;font-weight:600;margin-bottom:14px}
+  .v-ok{background:var(--ok-bg);color:var(--ok)}
+  .v-no{background:var(--err-bg);color:var(--err)}
+  .f{border-left:3px solid;padding:9px 12px;border-radius:0 6px 6px 0;
+     margin-bottom:9px;font-size:13px}
+  .f-error{border-color:var(--err);background:var(--err-bg)}
+  .f-warning{border-color:var(--warn);background:var(--warn-bg)}
+  .f-info{border-color:var(--info);background:var(--info-bg)}
+  .f .fil{display:block;margin-top:3px;font-style:italic;opacity:.85}
+  .auth{display:block;margin-top:6px;font-size:11px;color:var(--muted)}
+  .empty{color:var(--muted);font-size:13px}
+  .mode{font-size:11px;background:rgba(255,255,255,.2);padding:3px 9px;
+        border-radius:99px;margin-left:8px}
+</style>
+
+<link rel="stylesheet" href="/static/gov.css">
+<script src="/static/site.js" defer></script>
+</head>
+<body data-page="checker">
+<header>
+  <h1>Pagsusuri ng Aplikasyon<span class="mode" id="mode">citizen</span></h1>
+  <p>Anti-Rabies Pet Registration — Municipal Agriculture Office, Pagsanjan, Laguna</p>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>Rehistro ng Alagang Hayop</h2>
+    <p class="sub">Suriin ang inyong impormasyon bago pumunta sa tanggapan.
+       Walang itinatago o ipinapadalang datos hangga't hindi kayo nagsusumite sa MAO.</p>
+
+    <fieldset>
+      <legend>Impormasyon ng May-ari</legend>
+      <div class="grid">
+        <div><label for="last_name">Apelyido *</label><input id="last_name"></div>
+        <div><label for="first_name">Pangalan *</label><input id="first_name"></div>
+        <div><label for="middle_name">Gitnang Pangalan</label><input id="middle_name" placeholder="N/A kung wala"></div>
+        <div><label for="barangay">Barangay *</label><select id="barangay"><option value=""></option></select></div>
+        <div><label for="birthday">Kapanganakan *</label><input id="birthday" type="date"></div>
+        <div><label for="gender">Kasarian</label><select id="gender"><option value=""></option></select></div>
+        <div class="full"><label for="contact_no">Cellphone Number *</label>
+          <input id="contact_no" placeholder="09171234567" inputmode="numeric">
+          <div class="hint">Dito ipapadala ang paalala tungkol sa susunod na bakuna.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Impormasyon ng Hayop</legend>
+      <div class="grid">
+        <div><label for="pet_name">Pangalan ng Alaga *</label><input id="pet_name"></div>
+        <div><label for="species">Uri *</label><select id="species"><option value=""></option></select></div>
+        <div><label for="breed">Lahi</label><input id="breed" placeholder="Aspin / Puspin / Mixed"></div>
+        <div><label for="color">Kulay *</label><input id="color"></div>
+        <div><label for="pet_age_months">Edad (buwan) *</label><input id="pet_age_months" type="number" min="0" max="360"></div>
+        <div><label for="pet_sex">Kasarian ng Hayop *</label><select id="pet_sex"><option value=""></option></select></div>
+        <div class="full"><label for="last_vaccination_date">Huling Bakuna (kung mayroon)</label>
+          <input id="last_vaccination_date" type="date">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button id="go">Suriin</button>
+      <button id="clear" class="ghost" type="button">Linisin</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Resulta</h2>
+    <p class="sub">Ang bawat kinakailangan ay may batayan sa Citizen's Charter o batas.</p>
+    <div id="out"><p class="empty">Punan ang form at pindutin ang <b>Suriin</b>.</p></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const FIELDS = ["barangay","last_name","first_name","middle_name","birthday",
+  "gender","contact_no","pet_name","species","breed","pet_age_months",
+  "pet_sex","color","last_vaccination_date"];
+
+// Dropdowns come from the server so the UI can never offer a value the
+// validator rejects — one source of truth for barangays and species.
+async function loadReference(){
+  try{
+    const r = await fetch("/api/check/reference");
+    const ref = await r.json();
+    const fill = (el, arr) => arr.forEach(v => {
+      const o = document.createElement("option"); o.value = o.textContent = v;
+      el.appendChild(o);
+    });
+    fill($("barangay"), ref.barangays);
+    fill($("species"),  ref.species);
+    fill($("gender"),   ref.sex);
+    fill($("pet_sex"),  ref.sex);
+  }catch(e){ console.error("reference load failed", e); }
+}
+
+function collect(){
+  const d = {form_id:"rabies_registration"};
+  FIELDS.forEach(f => { const v = $(f).value.trim(); if(v) d[f] = v; });
+  if(d.pet_age_months) d.pet_age_months = parseInt(d.pet_age_months,10);
+  return d;
+}
+
+function render(res){
+  const out = $("out");
+  FIELDS.forEach(f => $(f).classList.remove("bad"));
+  out.innerHTML = "";
+
+  const v = document.createElement("div");
+  v.className = "verdict " + (res.can_submit ? "v-ok" : "v-no");
+  v.textContent = res.can_submit
+    ? "Kumpleto — maaari nang isumite sa MAO."
+    : `Hindi pa kumpleto — ${res.error_count} bagay ang kailangang ayusin.`;
+  out.appendChild(v);
+
+  if(!res.findings.length){
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Walang nakitang problema.";
+    out.appendChild(p);
+    return;
+  }
+
+  const order = {error:0, warning:1, info:2};
+  res.findings.sort((a,b) => order[a.severity] - order[b.severity]);
+
+  res.findings.forEach(f => {
+    if(f.severity === "error" && $(f.field)) $(f.field).classList.add("bad");
+    const d = document.createElement("div");
+    d.className = "f f-" + f.severity;
+    // textContent throughout — never innerHTML with server strings.
+    const en = document.createElement("span");
+    en.textContent = f.message;
+    d.appendChild(en);
+    if(f.mensahe){
+      const fil = document.createElement("span");
+      fil.className = "fil"; fil.textContent = f.mensahe;
+      d.appendChild(fil);
+    }
+    if(f.authority){
+      const a = document.createElement("span");
+      a.className = "auth"; a.textContent = "Batayan: " + f.authority;
+      d.appendChild(a);
+    }
+    out.appendChild(d);
+  });
+}
+
+$("go").addEventListener("click", async () => {
+  $("go").disabled = true; $("go").textContent = "Sinusuri...";
+  try{
+    const r = await fetch("/api/check", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(collect())
+    });
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const res = await r.json();
+    $("mode").textContent = res.audience || "citizen";
+    render(res);
+  }catch(e){
+    $("out").innerHTML = "";
+    const d = document.createElement("div");
+    d.className = "f f-error";
+    d.textContent = "Hindi maabot ang server. Subukan muli. (" + e.message + ")";
+    $("out").appendChild(d);
+  }finally{
+    $("go").disabled = false; $("go").textContent = "Suriin";
+  }
+});
+
+$("clear").addEventListener("click", () => {
+  FIELDS.forEach(f => { $(f).value = ""; $(f).classList.remove("bad"); });
+  $("out").innerHTML = '<p class="empty">Punan ang form at pindutin ang <b>Suriin</b>.</p>';
+});
+
+loadReference();
+</script>
+</body>
+</html>

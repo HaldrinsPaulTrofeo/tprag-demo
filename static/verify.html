@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaccination Card Verification · Pagsanjan MAO</title>
+<style>
+  :root{
+    --paper:#faf9f5; --card:#fff; --line:#e6e4dd; --ink:#1d1f1e; --muted:#6c7670;
+    --field:#2f5d50; --field-2:#25493f;
+    --red:#b4402f; --red-bg:#fbeeeb; --amber:#a8720f; --amber-bg:#fdf5e6;
+    --green:#2f6b45; --green-bg:#edf5ef;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+       background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;
+          padding:14px 26px;background:var(--card);border-bottom:1px solid var(--line)}
+  .brand h1{font-size:16px;font-weight:640;display:inline}
+  .brand .loc{font-size:12.5px;color:var(--muted);margin-left:8px}
+  .navlinks a{margin-left:18px;font-size:13.5px;color:var(--muted);text-decoration:none}
+  .navlinks a.active,.navlinks a:hover{color:var(--field)}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:26px}
+  .section-h{display:flex;align-items:center;justify-content:space-between;margin:26px 0 13px}
+  .section-h h2{font-size:16px;font-weight:640}
+  .hint{font-size:12.5px;color:var(--muted)}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+
+  /* Upload */
+  .drop{border:1.5px dashed var(--line);border-radius:10px;padding:30px;text-align:center;
+        background:#fdfcf9;cursor:pointer;transition:.15s}
+  .drop:hover,.drop.over{border-color:var(--field);background:#f4f8f6}
+  .drop .big{font-size:15px;font-weight:600;margin-bottom:5px}
+  .drop .sub{font-size:12.5px;color:var(--muted)}
+  .uprow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  select,input[type=text]{font:inherit;font-size:13px;padding:8px 11px;
+        border:1px solid var(--line);border-radius:7px;background:#fff}
+
+  .btn{font:inherit;font-size:13px;font-weight:550;cursor:pointer;border:1px solid var(--field);
+       background:var(--field);color:#fff;padding:8px 15px;border-radius:7px}
+  .btn:hover{background:var(--field-2)}
+  .btn.ghost{background:transparent;color:var(--field)}
+  .btn.ghost:hover{background:#eef2f0}
+  .btn.danger{background:transparent;border-color:var(--red);color:var(--red)}
+  .btn.danger:hover{background:var(--red-bg)}
+  .btn.small{padding:5px 10px;font-size:12px}
+  .btn:disabled{opacity:.5;cursor:default}
+
+  /* Review split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .docpane{background:#2a2c2b;border-radius:10px;padding:12px;position:sticky;top:16px}
+  .docpane img{width:100%;border-radius:6px;display:block;transition:transform .18s;
+               transform-origin:center top;cursor:zoom-in}
+  .docpane img.zoom{transform:scale(1.9);cursor:zoom-out}
+  .docpane .tools{display:flex;justify-content:space-between;align-items:center;
+                  margin-bottom:9px;color:#cfd4d1;font-size:12px}
+
+  .charterref{background:var(--green-bg);border-left:3px solid var(--green);
+              padding:11px 14px;border-radius:0 7px 7px 0;font-size:12.5px;margin-bottom:16px}
+  .charterref b{display:block;margin-bottom:2px}
+
+  .frow{padding:13px 0;border-top:1px solid #efeeea}
+  .petbox{margin-top:16px;border:1px solid var(--line);border-radius:9px;padding:14px 16px;background:#fbfbf9}
+  .petbox h3{font-size:13.5px;font-weight:640;margin-bottom:8px}
+  .petbox .tabs{display:flex;gap:8px;margin-bottom:12px}
+  .petbox .tabs label{font-size:13px;display:flex;align-items:center;gap:5px;cursor:pointer}
+  .petbox .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .petbox .grid label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:3px}
+  .petbox input,.petbox select{width:100%;font:inherit;font-size:13.5px;padding:8px 10px;
+    border:1px solid var(--line);border-radius:7px;background:#fff}
+  .match{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;
+    border:1px solid var(--line);border-radius:7px;margin-bottom:6px;cursor:pointer;font-size:13px;background:#fff}
+  .match:hover,.match.sel{border-color:var(--field);background:#f1f6f3}
+  .match .sc{font-size:11.5px;color:var(--muted)}
+  .newid{font-size:12px;color:var(--muted);margin-top:8px}
+  .frow:first-of-type{border-top:none}
+  .flabel{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .flabel .nm{font-size:12.5px;font-weight:600}
+  .flabel .req{font-size:10.5px;color:var(--red);font-weight:700}
+  .frow input{width:100%;font:inherit;font-size:14px;padding:9px 11px;
+              border:1px solid var(--line);border-radius:7px}
+  .frow input:focus{outline:2px solid var(--field);border-color:transparent}
+  .frow input.flag{border-color:var(--amber);background:#fffdf7}
+  .frow input.miss{border-color:var(--red);background:#fffaf9}
+  .raw{font-size:11.5px;color:var(--muted);margin-top:5px;font-family:ui-monospace,monospace;
+       overflow-wrap:anywhere}
+
+  .badge{display:inline-block;font-size:10.5px;font-weight:650;padding:2px 7px;border-radius:99px;
+         letter-spacing:.02em}
+  .badge.PRESENT{background:var(--green-bg);color:var(--green)}
+  .badge.LOW_CONFIDENCE{background:var(--amber-bg);color:var(--amber)}
+  .badge.MISSING{background:var(--red-bg);color:var(--red)}
+  .conf{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);
+        border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;
+           color:var(--muted);font-weight:600;padding:11px 14px;
+           border-bottom:1px solid var(--line);background:#faf9f5}
+  tbody td{padding:11px 14px;border-bottom:1px solid #ededea;font-size:13.5px}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#faf9f4;cursor:pointer}
+  .mono{font-variant-numeric:tabular-nums}
+  .empty{padding:26px;text-align:center;color:var(--muted);font-size:13.5px}
+
+  .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;
+           padding-top:16px;border-top:1px solid var(--line)}
+  .notice{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.55}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);
+         color:#fff;padding:12px 20px;border-radius:8px;font-size:13.5px;opacity:0;
+         pointer-events:none;transition:opacity .2s;z-index:80}
+  .toast.show{opacity:1}
+  .spinner{display:inline-block;width:13px;height:13px;border:2px solid #ffffff55;
+           border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;
+           vertical-align:-2px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:900px){.split{grid-template-columns:1fr}.docpane{position:static}}
+</style>
+
+<link rel="stylesheet" href="/static/gov.css">
+<script src="/static/site.js" defer></script>
+</head>
+<body data-page="verify">
+
+<header class="topbar">
+  <div class="brand"><h1>Vaccination Card Verification</h1><span class="loc">Pagsanjan, Laguna</span></div>
+  <nav class="navlinks">
+    <a href="/">Staff Dashboard</a>
+    <a href="/registry">Pet Registry</a>
+    <a href="/verify" class="active">Card Verification</a>
+    <a href="/charter">Charter Q&amp;A</a>
+    <a href="/citizen">Citizen Lookup</a>
+    <a href="/checker">Form Checker</a>
+    <a href="#" id="logout">Log out</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ Upload ============ -->
+  <div class="section-h"><h2>Digitise a card</h2><span class="hint" id="engineStatus"></span></div>
+  <div class="panel">
+    <div class="drop" id="drop">
+      <div class="big">Drop a vaccination card here, or click to choose a file</div>
+      <div class="sub">JPG, PNG, TIFF or PDF · max 12 MB · photograph the whole card, flat and well lit</div>
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff,.pdf" hidden>
+    </div>
+    <div class="uprow">
+      <select id="serviceType"></select>
+      <input type="text" id="animalId" placeholder="Pet ID (optional — can be set during review)">
+      <button class="btn" id="uploadBtn" disabled>Run OCR</button>
+      <span class="hint" id="fileName"></span>
+    </div>
+  </div>
+
+  <!-- ============ Review ============ -->
+  <div id="reviewWrap" style="display:none">
+    <div class="section-h">
+      <h2>Review &amp; confirm <span class="hint" id="subMeta"></span></h2>
+      <button class="btn ghost small" id="closeReview">Close</button>
+    </div>
+    <div class="split">
+      <div class="docpane">
+        <div class="tools"><span>Submitted document</span><span>Click image to zoom</span></div>
+        <img id="docImg" alt="Submitted vaccination card">
+      </div>
+      <div class="panel">
+        <div class="charterref" id="charterRef"></div>
+        <div id="fields"></div>
+
+        <div class="petbox">
+          <h3>Which pet is this card for?</h3>
+          <div class="tabs">
+            <label><input type="radio" name="petMode" value="existing" checked> Existing pet</label>
+            <label><input type="radio" name="petMode" value="new"> New pet — register now</label>
+          </div>
+
+          <div id="petExisting">
+            <div id="petMatches"></div>
+            <input type="text" id="petIdInput" placeholder="…or type the Pet ID (e.g. P0012)">
+          </div>
+
+          <div id="petNew" style="display:none">
+            <div class="grid">
+              <div><label>Pet name</label><input id="npName"></div>
+              <div><label>Species</label>
+                <select id="npSpecies"><option>Dog</option><option>Cat</option><option>Other</option></select></div>
+              <div><label>Sex</label>
+                <select id="npSex"><option value="M">M</option><option value="F">F</option><option value="MX">Unknown</option></select></div>
+              <div><label>Breed</label><input id="npBreed"></div>
+              <div style="grid-column:1/-1"><label>Colour / markings</label><input id="npColor"></div>
+            </div>
+            <h3 style="margin-top:14px">Owner</h3>
+            <div id="ownerMatches"></div>
+            <label style="font-size:13px;display:flex;gap:6px;align-items:center;margin:4px 0 8px">
+              <input type="checkbox" id="npNewOwner" style="width:auto"> Owner is not in the registry — add them</label>
+            <div id="npOwnerForm" class="grid" style="display:none">
+              <div><label>First name</label><input id="noFirst"></div>
+              <div><label>Last name</label><input id="noLast"></div>
+              <div><label>Barangay</label>
+                <input id="noBrgy" list="brgyList" autocomplete="off" placeholder="Type or pick…">
+                <datalist id="brgyList"></datalist>
+                <div class="hint" id="brgyHint" style="margin-top:3px"></div></div>
+              <div><label>Contact no. (optional)</label><input id="noContact" placeholder="09XXXXXXXXX"></div>
+            </div>
+            <div class="newid">A Pet ID (P####) is generated automatically when you save.</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn danger" id="rejectBtn">Reject</button>
+          <button class="btn" id="commitBtn">Confirm &amp; save record</button>
+        </div>
+        <p class="notice">
+          The system does not approve records on its own. Extracted values are a proposal only —
+          the reviewing officer named on this session is accountable for what is saved.
+          Every correction is logged and feeds the module's measured accuracy.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Queue ============ -->
+  <div class="section-h">
+    <h2>Submission queue</h2>
+    <div>
+      <select id="verdictFilter">
+        <option value="">All</option>
+        <option value="PENDING_REVIEW" selected>Awaiting review</option>
+        <option value="INCOMPLETE">Incomplete</option>
+        <option value="COMPLETE">Committed</option>
+        <option value="REJECTED">Rejected</option>
+      </select>
+      <button class="btn ghost small" id="refreshBtn">Refresh</button>
+    </div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>#</th><th>File</th><th>Service</th><th>Confidence</th>
+      <th>Status</th><th>Uploaded</th>
+    </tr></thead>
+    <tbody id="queue"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+  </table>
+
+  <!-- ============ Accuracy ============ -->
+  <div class="section-h"><h2>Extraction accuracy</h2>
+    <span class="hint">Computed from reviewer corrections · reported in Chapter 4</span></div>
+  <table>
+    <thead><tr>
+      <th>Field</th><th>Reviewed</th><th>Corrections</th><th>Not found</th>
+      <th>Avg. confidence</th><th>Field accuracy</th>
+    </tr></thead>
+    <tbody id="metrics"><tr><td colspan="6" class="empty">No reviewed submissions yet.</td></tr></tbody>
+  </table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const FIELD_ORDER = ["date_vaccinated","vaccine_used","batch_lot_no",
+                     "next_due_date","pet_name","owner_name","technician_name",
+                     "species","breed","sex","color_markings","address"];
+const PRETTY = {
+  date_vaccinated:"Date vaccinated", vaccine_used:"Vaccine used",
+  batch_lot_no:"Batch / lot number", next_due_date:"Next due date",
+  pet_name:"Pet name", owner_name:"Owner name", technician_name:"Vaccinator",
+  species:"Species", breed:"Breed", sex:"Sex", color_markings:"Colour / markings",
+  address:"Address"
+};
+let selPetId = null, selOwnerId = null;
+// Used if the server list is unavailable. Same 16 names as application_checker.
+const BARANGAYS_FALLBACK = ["Anibong","Biñan","Buboy","Cabanbanan","Calusiche","Dingin",
+  "Lambac","Layugan","Magdapio","Maulawin","Pinagsanjan","Sabang","Sampaloc","San Isidro",
+  "Barangay I","Barangay II"];
+let barangays = BARANGAYS_FALLBACK;
+let pendingFile = null, currentSub = null;
+
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);}
+const fmtTs = s => s ? new Date(s).toLocaleString("en-PH",
+  {year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+
+/* ---------------- init ---------------- */
+async function loadStatus(){
+  try{
+    const s = await (await fetch("/api/ocr/status")).json();
+    $("#serviceType").innerHTML = Object.entries(s.services)
+      .map(([k,v])=>`<option value="${k}">${v.label}</option>`).join("");
+    $("#engineStatus").textContent = s.tesseract_available
+      ? `OCR engine ready · flags anything below ${s.confidence_floor}% confidence`
+      : "⚠ Tesseract not detected — install it before running OCR";
+  }catch{ $("#engineStatus").textContent = "Could not reach the OCR service."; }
+}
+
+/* ---------------- upload ---------------- */
+const drop = $("#drop");
+drop.onclick = () => $("#fileInput").click();
+drop.ondragover = e => {e.preventDefault();drop.classList.add("over");};
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => {e.preventDefault();drop.classList.remove("over");
+  if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);};
+$("#fileInput").onchange = e => { if(e.target.files[0]) setFile(e.target.files[0]); };
+
+function setFile(f){
+  pendingFile = f;
+  $("#fileName").textContent = `${f.name} · ${(f.size/1024/1024).toFixed(2)} MB`;
+  $("#uploadBtn").disabled = false;
+}
+
+$("#uploadBtn").onclick = async () => {
+  if(!pendingFile) return;
+  const btn = $("#uploadBtn");
+  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>Reading card…`;
+  const fd = new FormData();
+  fd.append("file", pendingFile);
+  fd.append("service_type", $("#serviceType").value);
+  fd.append("livestock_id", $("#animalId").value.trim());
+  try{
+    const r = await fetch("/api/ocr/upload",{method:"POST",body:fd});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.detail || "Upload failed");
+    toast(`OCR complete — ${d.word_count} words read in ${d.elapsed_secs}s`);
+    await openReview(d.submission_id);
+    loadQueue();
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled = false; btn.textContent = "Run OCR";
+           pendingFile = null; $("#fileInput").value = ""; $("#fileName").textContent = ""; }
+};
+
+/* ---------------- review ---------------- */
+async function openReview(id){
+  const r = await fetch(`/api/ocr/submission/${id}`);
+  if(!r.ok){ toast("Could not load that submission."); return; }
+  const d = await r.json();
+  currentSub = d;
+
+  $("#docImg").src = `/api/ocr/file/${id}`;
+  $("#subMeta").textContent =
+    `· #${id} · ${d.submission.original_name} · uploaded by ${d.submission.uploaded_by}`;
+  $("#charterRef").innerHTML =
+    `<b>Requirements sourced from the Citizen's Charter</b>${d.charter_reference}`;
+  if($("#animalId").value.trim() === "" && d.submission.livestock_id)
+    $("#animalId").value = d.submission.livestock_id;
+
+  const byName = {}; d.fields.forEach(f => byName[f.field_name] = f);
+  $("#fields").innerHTML = FIELD_ORDER.filter(n => byName[n]).map(n => {
+    const f = byName[n];
+    const cls = f.status === "MISSING" ? "miss" : f.status === "LOW_CONFIDENCE" ? "flag" : "";
+    const conf = f.method === "derived" ? "derived from vaccination date"
+                                        : `${Number(f.confidence).toFixed(1)}% · ${f.method || "—"}`;
+    return `
+      <div class="frow">
+        <div class="flabel">
+          <span class="nm">${PRETTY[n] || n}</span>
+          ${f.is_required ? '<span class="req">REQUIRED</span>' : ''}
+          <span class="badge ${f.status}">${f.status.replace("_"," ")}</span>
+          <span class="conf">${conf}</span>
+        </div>
+        <input type="text" data-field="${n}" class="${cls}"
+               value="${(f.parsed_value || "").replace(/"/g,'&quot;')}"
+               placeholder="${f.status === 'MISSING' ? 'Not found — type the value from the card' : ''}">
+        ${f.raw_text ? `<div class="raw">OCR read: ${f.raw_text.slice(0,180)}</div>` : ''}
+      </div>`;
+  }).join("");
+
+  await loadMatches(id, d.submission.livestock_id || $("#animalId").value.trim());
+
+  $("#reviewWrap").style.display = "block";
+  $("#reviewWrap").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+$("#docImg").onclick = e => e.target.classList.toggle("zoom");
+$("#closeReview").onclick = () => { $("#reviewWrap").style.display = "none"; currentSub = null; };
+
+function collectFields(){
+  const out = {};
+  document.querySelectorAll("#fields input[data-field]")
+    .forEach(i => out[i.dataset.field] = i.value.trim() || null);
+  return out;
+}
+
+/* ---------------- pet linking ---------------- */
+document.addEventListener("input", e => {
+  const f = e.target.dataset && e.target.dataset.field;
+  if(f === "address"){ fillBarangay(""); }
+  if(f === "breed" && !$("#npBreed").value) $("#npBreed").value = e.target.value;
+});
+const esc = v => String(v ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function petMode(){ return document.querySelector('input[name="petMode"]:checked').value; }
+function setPetMode(m){
+  document.querySelector(`input[name="petMode"][value="${m}"]`).checked = true;
+  $("#petExisting").style.display = m === "existing" ? "block" : "none";
+  $("#petNew").style.display      = m === "new" ? "block" : "none";
+}
+document.querySelectorAll('input[name="petMode"]').forEach(r => r.onchange = () => setPetMode(petMode()));
+$("#npNewOwner").onchange = e => {
+  $("#npOwnerForm").style.display = e.target.checked ? "grid" : "none";
+  if(e.target.checked){ selOwnerId = null;
+    document.querySelectorAll("#ownerMatches .match").forEach(x => x.classList.remove("sel")); }
+};
+$("#petIdInput").oninput = () => { selPetId = null;
+  document.querySelectorAll("#petMatches .match").forEach(x => x.classList.remove("sel")); };
+
+const fold = t => (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g,"").trim();
+function lev(a,b){ const d=[...Array(b.length+1).keys()];
+  for(let i=1;i<=a.length;i++){ let p=d[0]; d[0]=i;
+    for(let j=1;j<=b.length;j++){ const t=d[j];
+      d[j]=Math.min(d[j]+1,d[j-1]+1,p+(a[i-1]===b[j-1]?0:1)); p=t; } }
+  return d[b.length]; }
+// Best barangay for handwritten text like "cabanbanun" -> "Cabanbanan".
+// Also finds a barangay mentioned inside a longer address ("Purok 2, Sabang").
+function guessBarangay(raw){
+  const r = fold(raw); if(!r) return "";
+  let best = "", bestSim = 0;
+  for(const b of barangays){
+    const f = fold(b);
+    if(r === f || r.split(" ").includes(f) || (f.includes(" ") && r.includes(f))) return b;
+    const cands = [r, ...r.split(" ")];
+    for(const c of cands){ if(!c) continue;
+      const sim = 1 - lev(c,f)/Math.max(c.length,f.length);
+      if(sim > bestSim){ bestSim = sim; best = b; } }
+  }
+  return bestSim >= 0.7 ? best : "";
+}
+function canonicalBarangay(v){ const f = fold(v); return barangays.find(b => fold(b) === f) || ""; }
+function reviewField(name){ const i = document.querySelector(`#fields input[data-field="${name}"]`);
+  return i ? i.value.trim() : ""; }
+function fillBarangay(pfBarangay){
+  $("#brgyList").innerHTML = barangays.map(b => `<option value="${esc(b)}">`).join("");
+  const addr = reviewField("address");
+  const g = pfBarangay || guessBarangay(addr);
+  $("#noBrgy").value = g;
+  $("#brgyHint").textContent = addr ? (g ? `From card: "${addr}"` : `Card says "${addr}" — not a Pagsanjan barangay, please pick one`) : "";
+}
+
+async function loadMatches(id, knownPetId){
+  selPetId = null; selOwnerId = null;
+  $("#petIdInput").value = knownPetId || "";
+  $("#npNewOwner").checked = false; $("#npOwnerForm").style.display = "none";
+  let m;
+  try{ const r = await fetch(`/api/ocr/submission/${id}/matches`); m = await r.json();
+       if(!r.ok) throw new Error(m.detail || r.status); }
+  catch(e){
+    console.error("pet matches failed:", e);
+    // Still usable: fall back to the values on the review form.
+    m = {pet_matches: [], owner_matches: [], barangays: BARANGAYS_FALLBACK, prefill: {}};
+  }
+  if(Array.isArray(m.barangays) && m.barangays.length) barangays = m.barangays;
+  const own = (reviewField("owner_name") || "").split(/\s+/).filter(Boolean);
+  const pf = Object.assign({
+    pet_name: reviewField("pet_name"), species: reviewField("species") || "Dog",
+    sex: reviewField("sex") || "MX", breed: reviewField("breed"),
+    color_markings: reviewField("color_markings"),
+    owner_first_name: own.slice(0,-1).join(" ") || own[0] || "",
+    owner_last_name: own.length > 1 ? own[own.length-1] : "", barangay: ""
+  }, Object.fromEntries(Object.entries(m.prefill || {}).filter(([k,v]) => v)));
+
+  $("#petMatches").innerHTML = m.pet_matches.length
+    ? `<div class="hint" style="margin-bottom:6px">Possible matches in the registry:</div>` +
+      m.pet_matches.map(p => `
+        <div class="match" data-pet="${esc(p.pet_id)}">
+          <span><b>${esc(p.pet_id)}</b> · ${esc(p.pet_name)} (${esc(p.species)}) — ${esc(p.owner_name)}, ${esc(p.barangay || "—")}</span>
+          <span class="sc">${p.score}% match</span></div>`).join("")
+    : `<div class="hint" style="margin-bottom:6px">No similar pet found in the registry.</div>`;
+  document.querySelectorAll("#petMatches .match").forEach(el => el.onclick = () => {
+    document.querySelectorAll("#petMatches .match").forEach(x => x.classList.remove("sel"));
+    el.classList.add("sel"); selPetId = el.dataset.pet; $("#petIdInput").value = selPetId;
+  });
+
+  $("#npName").value = pf.pet_name; $("#npSpecies").value = pf.species;
+  $("#npSex").value = pf.sex; $("#npBreed").value = pf.breed; $("#npColor").value = pf.color_markings;
+  $("#noFirst").value = pf.owner_first_name; $("#noLast").value = pf.owner_last_name;
+  fillBarangay(pf.barangay);
+  $("#noContact").value = "";
+
+  $("#ownerMatches").innerHTML = m.owner_matches.length
+    ? `<div class="hint" style="margin-bottom:6px">Pick the owner if they're already registered:</div>` +
+      m.owner_matches.map(o => `
+        <div class="match" data-owner="${o.owner_id}">
+          <span>${esc(o.owner_name)} · ${esc(o.barangay || "—")}</span>
+          <span class="sc">${o.score}% match</span></div>`).join("")
+    : `<div class="hint" style="margin-bottom:6px">No similar owner found — add them below.</div>`;
+  document.querySelectorAll("#ownerMatches .match").forEach(el => el.onclick = () => {
+    document.querySelectorAll("#ownerMatches .match").forEach(x => x.classList.remove("sel"));
+    el.classList.add("sel"); selOwnerId = Number(el.dataset.owner);
+    $("#npNewOwner").checked = false; $("#npOwnerForm").style.display = "none";
+  });
+  if(!m.owner_matches.length){ $("#npNewOwner").checked = true; $("#npOwnerForm").style.display = "grid"; }
+
+  // Nothing matched and no ID given -> this is most likely a new pet.
+  setPetMode(!knownPetId && !m.pet_matches.length ? "new" : "existing");
+}
+
+function buildPetPayload(){
+  if(petMode() === "existing"){
+    const pid = selPetId || $("#petIdInput").value.trim();
+    if(!pid) throw new Error("Pick a matching pet, type a Pet ID, or choose 'New pet'.");
+    return {livestock_id: pid, new_pet: null};
+  }
+  const np = {pet_name: $("#npName").value.trim(), species: $("#npSpecies").value,
+              sex: $("#npSex").value, breed: $("#npBreed").value.trim(),
+              color_markings: $("#npColor").value.trim()};
+  if(!np.pet_name) throw new Error("Enter the new pet's name.");
+  if($("#npNewOwner").checked){
+    const no = {first_name: $("#noFirst").value.trim(), last_name: $("#noLast").value.trim(),
+                barangay: canonicalBarangay($("#noBrgy").value), contact_no: $("#noContact").value.trim()};
+    if(!no.first_name || !no.last_name) throw new Error("Enter the owner's first and last name.");
+    if(!no.barangay) throw new Error("Pick the owner's barangay from the list.");
+    np.new_owner = no;
+  } else if(selOwnerId){
+    np.owner_id = selOwnerId;
+  } else {
+    throw new Error("Pick the owner, or tick 'Owner is not in the registry'.");
+  }
+  return {livestock_id: "", new_pet: np};
+}
+
+$("#commitBtn").onclick = async () => {
+  if(!currentSub) return;
+  let pet;
+  try{ pet = buildPetPayload(); }catch(e){ toast(e.message); return; }
+  const f = collectFields();
+  if(!f.date_vaccinated){ toast("Date vaccinated is required."); return; }
+
+  const btn = $("#commitBtn");
+  btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>Saving…`;
+  try{
+    const r = await fetch(`/api/ocr/submission/${currentSub.submission.submission_id}/confirm`,{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        ...pet, date_vaccinated: f.date_vaccinated,
+        vaccine_used: f.vaccine_used, batch_lot_no: f.batch_lot_no,
+        technician_name: f.technician_name, disease:"Rabies",
+        fields: f, action:"COMMIT"
+      })
+    });
+    const txt = await r.text();
+    let d; try{ d = JSON.parse(txt); }catch{ d = {detail: `Server error (${r.status}) — see the uvicorn console`}; }
+    if(!r.ok) throw new Error(d.detail || "Could not save");
+    toast(d.new_pet
+      ? `Registered new pet ${d.pet_id} and saved vaccination record #${d.record_id}`
+      : `Saved — vaccination record #${d.record_id} for ${d.pet_id}`);
+    $("#reviewWrap").style.display = "none"; currentSub = null;
+    loadQueue(); loadMetrics();
+  }catch(e){ toast(e.message); }
+  finally{ btn.disabled = false; btn.textContent = "Confirm & save record"; }
+};
+
+$("#rejectBtn").onclick = async () => {
+  if(!currentSub) return;
+  if(!confirm("Reject this submission? No vaccination record will be created.")) return;
+  const r = await fetch(`/api/ocr/submission/${currentSub.submission.submission_id}/confirm`,{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({livestock_id:"", action:"REJECT", remarks:"Rejected on review"})
+  });
+  if(r.ok){ toast("Submission rejected."); $("#reviewWrap").style.display="none";
+            currentSub=null; loadQueue(); }
+  else toast("Could not reject.");
+};
+
+/* ---------------- queue ---------------- */
+async function loadQueue(){
+  const v = $("#verdictFilter").value;
+  const d = await (await fetch(`/api/ocr/submissions${v?`?verdict=${v}`:""}`)).json();
+  $("#queue").innerHTML = d.count ? d.submissions.map(s => `
+    <tr onclick="openReview(${s.submission_id})">
+      <td class="mono">${s.submission_id}</td>
+      <td>${s.original_name || "—"}</td>
+      <td>${s.service_type.replace(/_/g," ")}</td>
+      <td class="mono">${s.mean_confidence ? Number(s.mean_confidence).toFixed(1)+"%" : "—"}</td>
+      <td><span class="badge ${s.verdict==='COMPLETE'?'PRESENT':s.verdict==='REJECTED'?'MISSING':'LOW_CONFIDENCE'}">
+          ${s.verdict.replace(/_/g," ")}</span></td>
+      <td>${fmtTs(s.uploaded_at)}</td>
+    </tr>`).join("")
+    : `<tr><td colspan="6" class="empty">Nothing here.</td></tr>`;
+}
+
+/* ---------------- metrics ---------------- */
+async function loadMetrics(){
+  const m = await (await fetch("/api/ocr/metrics")).json();
+  if(!m.per_field.length){
+    $("#metrics").innerHTML =
+      `<tr><td colspan="6" class="empty">No reviewed submissions yet.</td></tr>`;
+    return;
+  }
+  const rows = m.per_field.map(f => `
+    <tr>
+      <td>${PRETTY[f.field_name] || f.field_name}</td>
+      <td class="mono">${f.reviewed}</td>
+      <td class="mono">${f.corrections}</td>
+      <td class="mono">${f.missed}</td>
+      <td class="mono">${f.avg_confidence}%</td>
+      <td class="mono"><b>${f.field_accuracy!=null ? (f.field_accuracy*100).toFixed(1)+"%" : "—"}</b></td>
+    </tr>`).join("");
+  $("#metrics").innerHTML = rows + `
+    <tr style="background:#f6f8f7">
+      <td><b>Overall</b></td>
+      <td class="mono"><b>${m.fields_reviewed}</b></td>
+      <td class="mono" colspan="3"></td>
+      <td class="mono"><b>${m.overall_field_accuracy!=null
+          ? (m.overall_field_accuracy*100).toFixed(1)+"%" : "—"}</b></td>
+    </tr>`;
+}
+
+$("#verdictFilter").onchange = loadQueue;
+$("#refreshBtn").onclick = () => { loadQueue(); loadMetrics(); };
+$("#logout").onclick = async e => { e.preventDefault();
+  await fetch("/api/logout",{method:"POST"}); location.href = "/login"; };
+
+loadStatus(); loadQueue(); loadMetrics();
+</script>
+</body>
+</html>

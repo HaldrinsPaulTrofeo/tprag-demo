@@ -1,0 +1,286 @@
+/* ==========================================================================
+   gov.css — one visual identity for the Pagsanjan MAO service portal.
+
+   HOW THIS WORKS
+   --------------
+   Each page currently declares its own :root palette, and there are four of
+   them: dashboard/citizen use --field/--paper, checker uses --brand/--bg,
+   charter/login use --navy/--bg. Rather than rewriting five stylesheets, this
+   file REDECLARES every one of those variable names against a single palette.
+
+   Because this file is linked AFTER each page's inline <style>, and :root has
+   equal specificity in both, source order wins and every page recolours with
+   no markup change. Delete a page's inline :root block later if you want; it
+   is now dead weight, not a conflict.
+
+   The .gov-* classes below style the masthead, header, nav and footer that
+   site.js injects. No page defines those class names, so nothing collides.
+   ========================================================================== */
+
+:root {
+  /* --- Source palette ---------------------------------------------------
+     Drawn from the Philippine flag, because this is a government service and
+     the identity should be recognisable as one before anyone reads a word.
+     Navy carries the chrome, red is reserved strictly for overdue/error so it
+     keeps its urgency, gold appears only in the tricolour rule. */
+  --gov-navy:       #0038A8;
+  --gov-navy-deep:  #002B80;
+  --gov-navy-tint:  #E8EEF9;
+  --gov-red:        #CE1126;
+  --gov-red-tint:   #FBEAEC;
+  --gov-gold:       #FCD116;
+  --gov-green:      #1E6B3A;
+  --gov-green-tint: #E8F2EB;
+  --gov-amber:      #8A5A00;
+  --gov-amber-tint: #FDF3E0;
+
+  --gov-ink:        #14181F;
+  --gov-muted:      #58616E;
+  --gov-line:       #D5DBE4;
+  --gov-surface:    #FFFFFF;
+  --gov-field:      #EEF1F6;
+
+  --gov-radius:     8px;
+  --gov-radius-sm:  6px;
+  --gov-shadow:     0 1px 2px rgba(20, 24, 31, .06), 0 4px 14px rgba(20, 24, 31, .05);
+
+  /* --- Compatibility layer ---------------------------------------------
+     Every variable name any page already uses, remapped onto the palette
+     above. This is what makes the recolour automatic. */
+
+  /* dashboard.html + citizen.html */
+  --ink:       var(--gov-ink);
+  --field:     var(--gov-navy);
+  --field-2:   var(--gov-navy-deep);
+  --paper:     var(--gov-field);
+  --card:      var(--gov-surface);
+  --line:      var(--gov-line);
+  --muted:     var(--gov-muted);
+  --amber:     var(--gov-amber);
+  --amber-bg:  var(--gov-amber-tint);
+  --red:       var(--gov-red);
+  --red-bg:    var(--gov-red-tint);
+  --green:     var(--gov-green);
+  --green-bg:  var(--gov-green-tint);
+
+  /* checker.html */
+  --bg:         var(--gov-field);
+  --brand:      var(--gov-navy);
+  --brand-dark: var(--gov-navy-deep);
+  --err:        var(--gov-red);
+  --err-bg:     var(--gov-red-tint);
+  --warn:       var(--gov-amber);
+  --warn-bg:    var(--gov-amber-tint);
+  --info:       var(--gov-navy);
+  --info-bg:    var(--gov-navy-tint);
+  --ok:         var(--gov-green);
+  --ok-bg:      var(--gov-green-tint);
+
+  /* charter.html + login.html */
+  --navy:   var(--gov-navy);
+  --navy-d: var(--gov-navy-deep);
+  --gold:   var(--gov-gold);
+}
+
+body {
+  background: var(--gov-field);
+  color: var(--gov-ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --------------------------------------------------------------------------
+   Masthead — the national strip every PH government site carries.
+   -------------------------------------------------------------------------- */
+
+.pmao-masthead {
+  background: #F3F5F8;
+  border-bottom: 1px solid var(--gov-line);
+  font-size: 12px;
+  color: var(--gov-muted);
+}
+.pmao-masthead .in {
+  max-width: 1180px; margin: 0 auto; padding: 6px 28px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.pmao-masthead .flag {
+  width: 14px; height: 10px; border-radius: 1px; flex: none;
+  background:
+    linear-gradient(to bottom, var(--gov-navy) 0 50%, var(--gov-red) 50% 100%);
+  box-shadow: inset 0 0 0 .5px rgba(0,0,0,.15);
+}
+.pmao-masthead b { font-weight: 600; color: #3B4450; }
+.pmao-masthead .sep { opacity: .4; }
+
+/* --------------------------------------------------------------------------
+   Header — seals, office name, service line, navigation.
+   -------------------------------------------------------------------------- */
+
+.pmao-header { background: var(--gov-navy); color: #fff; }
+.pmao-header .in {
+  max-width: 1180px; margin: 0 auto; padding: 14px 28px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.pmao-seals { display: flex; gap: 8px; flex: none; }
+.pmao-seals img {
+  width: 46px; height: 46px; border-radius: 50%; display: block;
+  background: #fff; padding: 2px;
+}
+.pmao-brand { flex: 1 1 190px; min-width: 0; }
+.pmao-brand .office {
+  font-size: 17px; font-weight: 650; letter-spacing: -.012em; line-height: 1.25;
+}
+.pmao-brand .service {
+  font-size: 12.5px; color: #C3D2EE; margin-top: 2px;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+/* Signposts which half of the system you're in — staff tools and citizen
+   tools look alike otherwise, and confusing the two is the expensive mistake. */
+.pmao-chip {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+  padding: 2px 7px; border-radius: 3px; text-transform: uppercase;
+  background: var(--gov-gold); color: #3A2E00;
+}
+
+.pmao-nav { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.pmao-nav a {
+  color: #D5E1F5; text-decoration: none; font-size: 12.5px; font-weight: 500;
+  padding: 7px 10px; border-radius: var(--gov-radius-sm); white-space: nowrap;
+}
+.pmao-nav a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.pmao-nav a[aria-current="page"] { background: rgba(255,255,255,.17); color: #fff; font-weight: 600; }
+.pmao-nav a.signin {
+  background: var(--gov-gold); color: #3A2E00; font-weight: 650;
+}
+.pmao-nav a.signin:hover { background: #FFDC46; color: #3A2E00; }
+.pmao-nav .divider { width: 1px; height: 20px; background: rgba(255,255,255,.22); margin: 0 5px; }
+
+.pmao-navtoggle {
+  display: none; font: inherit; font-size: 13px; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; border: 0;
+  padding: 8px 13px; border-radius: var(--gov-radius-sm);
+}
+
+/* The tricolour rule. This is the one loud element — it is the flag, it is
+   how a Philippine government site is recognised at a glance, and it costs
+   four pixels of height. Everything else on the page stays quiet.
+   The hairline above it matters: without it the blue segment sits against the
+   blue header and the bar reads as broken, starting a third of the way in. */
+.pmao-rule { display: flex; height: 4px; border-top: 1px solid rgba(255,255,255,.45); }
+.pmao-rule i { flex: 1; }
+.pmao-rule i:nth-child(1) { background: #1E63D6; }
+.pmao-rule i:nth-child(2) { background: var(--gov-red); }
+.pmao-rule i:nth-child(3) { background: var(--gov-gold); }
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.pmao-footer { background: #1B222E; color: #AEB8C6; margin-top: 56px; font-size: 13px; }
+.pmao-footer .in {
+  max-width: 1180px; margin: 0 auto; padding: 30px 28px 24px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px;
+}
+.pmao-footer .ftitle {
+  color: #fff; font-weight: 600; font-size: 13.5px; margin-bottom: 9px;
+}
+.pmao-footer .fline { line-height: 1.75; }
+.pmao-footer a { color: #AEB8C6; text-decoration: none; display: block; line-height: 1.75; }
+.pmao-footer a:hover { color: #fff; text-decoration: underline; }
+.pmao-footer .fbar {
+  border-top: 1px solid #2C3644; padding: 13px 28px; font-size: 12px;
+  max-width: 1180px; margin: 0 auto;
+  display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Quality floor
+   -------------------------------------------------------------------------- */
+
+a:focus-visible, button:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--gov-gold);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.pmao-skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: #fff; color: var(--gov-navy); padding: 10px 16px;
+  font-weight: 600; border-radius: 0 0 var(--gov-radius) 0;
+}
+.pmao-skip:focus { left: 0; }
+
+@media (max-width: 860px) {
+  .pmao-header .in { padding: 12px 18px; gap: 12px; }
+  .pmao-masthead .in, .pmao-footer .in, .pmao-footer .fbar { padding-left: 18px; padding-right: 18px; }
+  .pmao-footer .in { grid-template-columns: 1fr; gap: 20px; }
+  .pmao-navtoggle { display: block; margin-left: auto; }
+  .pmao-nav {
+    display: none; flex-basis: 100%; flex-direction: column;
+    align-items: stretch; gap: 1px; padding-top: 8px;
+  }
+  .pmao-nav.open { display: flex; }
+  .pmao-nav .divider { display: none; }
+  .pmao-nav a { padding: 11px 12px; }
+  .pmao-seals img { width: 40px; height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+@media print {
+  .pmao-masthead, .pmao-nav, .pmao-navtoggle, .pmao-footer, .pmao-skip { display: none !important; }
+  .pmao-header { background: #fff !important; color: #000 !important; }
+  .pmao-header .service { color: #444 !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Rendered charter answers.
+
+   The model returns Markdown; md.js converts it to these elements. Sizing is
+   deliberately modest — this content sits inside a chat bubble and must not
+   compete with the page's own headings.
+   -------------------------------------------------------------------------- */
+
+.answer > *:first-child { margin-top: 0; }
+.answer > *:last-child  { margin-bottom: 0; }
+.answer p { margin: 0 0 9px; line-height: 1.62; }
+.answer h4, .answer h5, .answer h6 {
+  margin: 14px 0 6px; line-height: 1.35; font-weight: 650;
+  color: var(--gov-ink); font-size: 14px;
+}
+.answer h5, .answer h6 { font-size: 13.5px; }
+.answer ul, .answer ol { margin: 0 0 9px; padding-left: 21px; }
+.answer li { margin-bottom: 4px; line-height: 1.6; }
+.answer li::marker { color: var(--gov-navy); }
+.answer strong { font-weight: 650; }
+.answer code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: .89em; background: #EEF1F6; border: 1px solid var(--gov-line);
+  border-radius: 4px; padding: 1px 5px;
+}
+.answer pre {
+  background: #F5F7FA; border: 1px solid var(--gov-line);
+  border-radius: var(--gov-radius-sm); padding: 11px 13px;
+  overflow-x: auto; margin: 0 0 9px;
+}
+.answer pre code { background: none; border: 0; padding: 0; font-size: .86em; }
+.answer hr { border: 0; border-top: 1px solid var(--gov-line); margin: 13px 0; }
+.answer a { color: var(--gov-navy); text-decoration: underline; }
+
+/* Fees and requirements arrive as tables often enough that these deserve to
+   look like part of the charter rather than a code dump. */
+.answer table {
+  width: 100%; border-collapse: collapse; margin: 0 0 10px;
+  font-size: 13.5px; display: block; overflow-x: auto;
+}
+.answer thead th {
+  background: var(--gov-navy-tint); color: var(--gov-navy-deep);
+  font-weight: 650; text-align: left; padding: 7px 10px;
+  border: 1px solid var(--gov-line); white-space: nowrap;
+}
+.answer tbody td {
+  padding: 7px 10px; border: 1px solid var(--gov-line); vertical-align: top;
+}
+.answer tbody tr:nth-child(even) td { background: #FAFBFD; }

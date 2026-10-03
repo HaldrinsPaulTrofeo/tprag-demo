@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagsanjan Companion Animal Services — Staff</title>
+<style>
+  :root {
+    --ink: #14302b;
+    --field: #1f5048;       /* deep teal-green: agriculture + health */
+    --field-2: #2c6b60;
+    --paper: #f6f4ee;
+    --card: #ffffff;
+    --line: #dcd9cf;
+    --amber: #b8791b;       /* due soon */
+    --amber-bg: #fbf0db;
+    --red: #a8322a;         /* overdue */
+    --red-bg: #f7e2df;
+    --green: #2f7d3f;       /* up to date */
+    --green-bg: #e3efe2;
+    --muted: #6c7670;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header.topbar {
+    background: var(--field);
+    color: #f3f1ea;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand h1 { font-size: 19px; font-weight: 650; letter-spacing: -0.01em; }
+  .brand .loc { font-size: 13px; opacity: 0.75; font-weight: 400; }
+  .navlinks a {
+    color: #d7e4e0; text-decoration: none; font-size: 13px;
+    padding: 6px 12px; border-radius: 6px; font-weight: 500;
+  }
+  .navlinks a.active { background: rgba(255,255,255,0.14); color: #fff; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 26px 28px 60px; }
+
+  /* Stat strip */
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px;
+  }
+  .stat .n { font-size: 28px; font-weight: 680; letter-spacing: -0.02em; }
+  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .stat.alert { border-color: var(--red); }
+  .stat.alert .n { color: var(--red); }
+
+  .section-h {
+    display: flex; align-items: center; justify-content: space-between;
+    margin: 30px 0 14px;
+  }
+  .section-h h2 { font-size: 16px; font-weight: 640; }
+  .section-h .hint { font-size: 13px; color: var(--muted); }
+
+  /* Overdue hero panel */
+  .hero {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    border-radius: 10px; overflow: hidden;
+  }
+  .hero .row {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr auto;
+    gap: 14px; align-items: center;
+    padding: 14px 18px; border-top: 1px solid var(--line);
+  }
+  .hero .row:first-child { border-top: none; }
+  /* Compact "Needs attention": tabs + first few rows, rest behind "Show all" */
+  .hero .row { padding: 9px 18px; }
+  .attn-bar { display:flex; gap:6px; align-items:center; padding:10px 14px;
+    border-bottom:1px solid var(--line); background:#fafaf8; flex-wrap:wrap; }
+  .attn-tab { font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+    border:1px solid var(--line); background:#fff; color:var(--muted);
+    padding:4px 11px; border-radius:100px; }
+  .attn-tab.on { border-color:var(--field); color:var(--field); background:#eef2fb; }
+  .attn-list.scroll { max-height:420px; overflow-y:auto; }
+  .attn-more { display:block; width:100%; font:inherit; font-size:13px; font-weight:600;
+    padding:10px; border:none; border-top:1px solid var(--line); background:#fafaf8;
+    color:var(--field); cursor:pointer; }
+  .attn-more:hover { background:#f1f3f8; }
+  .hero .who { font-weight: 600; }
+  .hero .sub { font-size: 12.5px; color: var(--muted); }
+  .pill {
+    display: inline-block; font-size: 11.5px; font-weight: 600;
+    padding: 3px 9px; border-radius: 100px;
+  }
+  .pill.OVERDUE { background: var(--red-bg); color: var(--red); }
+  .pill.PROACTIVE_ALERT_DUE { background: var(--amber-bg); color: var(--amber); }
+  .pill.UP_TO_DATE { background: var(--green-bg); color: var(--green); }
+  .pill.NEVER_VACCINATED { background: #eceae3; color: var(--muted); }
+
+  .btn {
+    font: inherit; font-size: 13px; font-weight: 550; cursor: pointer;
+    border: 1px solid var(--field); background: var(--field); color: #fff;
+    padding: 8px 14px; border-radius: 7px;
+  }
+  .btn:hover { background: var(--field-2); }
+  .btn.ghost { background: transparent; color: var(--field); }
+  .btn.ghost:hover { background: #eef2f0; }
+  .btn.small { padding: 5px 10px; font-size: 12px; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  /* Toolbar */
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .toolbar input, .toolbar select {
+    font: inherit; font-size: 13px; padding: 8px 11px;
+    border: 1px solid var(--line); border-radius: 7px; background: #fff;
+  }
+  .toolbar input { min-width: 220px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  thead th {
+    text-align: left; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--muted); font-weight: 600;
+    padding: 11px 14px; border-bottom: 1px solid var(--line); background: #faf9f5;
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid #ededea; font-size: 13.5px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #faf9f4; cursor: pointer; }
+  .mono { font-variant-numeric: tabular-nums; }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(20,30,28,0.45);
+    display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 12px; width: 100%; max-width: 560px;
+    max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal h3 { padding: 18px 22px; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .modal .body { padding: 20px 22px; }
+  .modal .foot { padding: 16px 22px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 5px; font-weight: 550; }
+  .field input { width: 100%; font: inherit; font-size: 14px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 13.5px; margin-bottom: 16px; }
+  .kv .k { color: var(--muted); }
+  .hist { font-size: 13px; }
+  .hist .h-row { padding: 9px 0; border-top: 1px solid #ededea; display: flex; justify-content: space-between; gap: 12px; }
+  .hist .h-row:first-child { border-top: none; }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 8px;
+    font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 80;
+  }
+  .toast.show { opacity: 1; }
+  .empty { padding: 26px; text-align: center; color: var(--muted); font-size: 13.5px; }
+
+  /* Forecast panel */
+  .fc-wrap { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .fc-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .fc-tab {
+    font: inherit; font-size: 12.5px; font-weight: 550; cursor: pointer;
+    padding: 6px 13px; border-radius: 100px; border: 1px solid var(--line);
+    background: #fff; color: var(--muted);
+  }
+  .fc-tab.on { background: var(--field); border-color: var(--field); color: #fff; }
+  .fc-chart { position: relative; height: 300px; }
+  .fc-meta { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px;
+             padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; }
+  .fc-meta .m .k { color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .fc-meta .m .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .fc-note { margin-top: 12px; padding: 10px 13px; background: var(--amber-bg);
+             border-left: 3px solid var(--amber); border-radius: 5px;
+             font-size: 12.5px; color: #6d4a10; }
+  .fc-empty { padding: 30px 20px; text-align: center; }
+  .fc-empty .big { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .fc-empty .sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .fc-bar { height: 7px; background: #ececE6; border-radius: 100px; overflow: hidden; margin: 14px auto 8px; max-width: 320px; }
+  .fc-bar > div { height: 100%; background: var(--field-2); }
+  table.fc-metrics { margin-top: 14px; border: 1px solid var(--line); }
+  table.fc-metrics td, table.fc-metrics th { font-size: 12.5px; padding: 8px 12px; }
+  table.fc-metrics tbody tr:hover { background: transparent; cursor: default; }
+  .fc-best { font-weight: 650; color: var(--green); }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .hero .row { grid-template-columns: 1fr auto; }
+    .hero .row .cell-hide { display: none; }
+    .col-hide { display: none; }
+  }
+  /* ---- session vial planner ---- */
+  .vp-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px; }
+  .vp-row label { font-size:11.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.04em; display:block; margin-bottom:4px; }
+  .vp-row input, .vp-row select { font:inherit; font-size:13px; padding:6px 9px;
+    border:1px solid var(--line); border-radius:7px; background:#fff; }
+  .vp-out { display:flex; gap:22px; flex-wrap:wrap; align-items:baseline;
+    padding:14px 0 2px; border-top:1px solid var(--line); }
+  .vp-big { font-size:30px; font-weight:650; font-variant-numeric:tabular-nums; }
+  .vp-big small { font-size:13px; font-weight:500; color:var(--muted); margin-left:5px; }
+  .vp-tbl { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+  .vp-tbl th { text-align:left; font-size:11.5px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.04em; padding:6px 10px 6px 0; font-weight:550; }
+  .vp-tbl td { padding:6px 10px 6px 0; font-variant-numeric:tabular-nums; border-top:1px solid var(--line); }
+  .vp-tbl tr.on td { font-weight:650; color:var(--field); }
+  .vp-lines { margin-top:12px; padding:10px 13px; background:#f6f8f7; border:1px solid var(--line);
+    border-radius:8px; font-size:13px; font-variant-numeric:tabular-nums; white-space:pre-line; }
+  /* ---- supply scenarios ---- */
+  .sc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+    gap:12px; margin-top:4px; }
+  .sc { border:1px solid var(--line); border-radius:9px; padding:13px 14px; background:var(--card); }
+  .sc .lab { font-size:12px; font-weight:600; color:var(--field); margin-bottom:6px; }
+  .sc .val { font-size:26px; font-weight:650; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .sc .val small { font-size:12px; font-weight:500; color:var(--muted); margin-left:4px; }
+  .sc .rng { font-size:11.5px; color:var(--muted); margin-top:2px; font-variant-numeric:tabular-nums; }
+  .sc .det { font-size:12px; color:var(--muted); line-height:1.5; margin-top:7px; }
+  .sc.zero .val { color:var(--danger,#b3261e); }
+  .vp-alloc { margin-top:12px; padding:11px 14px; border-radius:8px; font-size:13px;
+    line-height:1.55; border:1px solid var(--line); background:#f6f8f7; }
+  .vp-alloc.short { background:#fdf3f2; border-color:#e7c9c5; }
+  .vp-alloc b { font-variant-numeric:tabular-nums; }
+  .vp-alloc ul { margin:7px 0 0 18px; padding:0; }
+  .vp-alloc li { margin:2px 0; }
+  /* ---- pagination ---- */
+  .pager { display:flex; gap:8px; align-items:center; justify-content:flex-end;
+    margin-top:12px; font-size:13px; color:var(--muted); }
+  .pager.hide { display:none; }
+  .pager button { font:inherit; font-size:12.5px; padding:5px 11px; cursor:pointer;
+    border:1px solid var(--line); border-radius:7px; background:#fff; color:var(--field); }
+  .pager button:disabled { opacity:.4; cursor:default; color:var(--muted); }
+  /* ---- stray badge ---- */
+  .stray { display:inline-block; padding:1px 7px; border-radius:100px; font-size:11px;
+    font-weight:600; background:#eceae3; color:var(--muted); }
+  /* ---- charter card ---- */
+  .xcard { background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:18px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  .xcard .t { font-weight:640; font-size:14.5px; margin-bottom:3px; }
+  .xcard .d { font-size:13px; color:var(--muted); line-height:1.55; }
+  @media print { .noprint { display:none !important; } }
+</style>
+
+<link rel="stylesheet" href="/static/gov.css">
+<script src="/static/site.js" defer></script>
+<link rel="stylesheet" href="/static/requests.css"><script src="/static/request-common.js" defer></script><script src="/static/requests-queue.js" defer></script>
+</head>
+<body data-page="dashboard">
+<header class="topbar">
+  <div class="brand">
+    <h1>Companion Animal Services</h1>
+    <span class="loc">Pagsanjan, Laguna</span>
+  </div>
+  <nav class="navlinks">
+    <a href="/" class="active">Staff Dashboard</a>
+    <a href="/registry">Pet Registry</a>
+    <a href="/verify">Card Verification</a>
+    <a href="/charter">Charter Q&amp;A</a>
+    <a href="/citizen">Citizen Lookup</a>
+    <a href="/checker">Form Checker</a>
+    <a href="#" id="logout">Log out</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <!-- Stats -->
+  <div class="stats" id="stats"></div>
+
+<section id="requestsQueue" class="rq-card fc-wrap" aria-labelledby="queueTitle">
+<div class="rq-head"><div><h2 id="queueTitle">Barangay service requests</h2><p class="rq-note" id="queueSummary">Review requests and record an allocation decision.</p></div><a class="rq-link" href="/request">Encode a request or letter</a></div>
+<div class="rq-controls">
+<label>Status<select id="rqStatus"><option>SUBMITTED</option><option>UNDER_REVIEW</option><option>APPROVED</option><option>PARTIALLY_APPROVED</option><option>DEFERRED</option><option>DECLINED</option><option>FULFILLED</option><option value="">All statuses</option></select></label>
+<label>Barangay<select id="rqBarangay"><option value="">All barangays</option></select></label>
+<label>Category<select id="rqCategory"><option value="">All categories</option><option>ANTI_RABIES</option><option>LIVESTOCK</option><option>SEEDS</option><option>FINGERLINGS</option><option>INPUTS</option><option>OTHER</option></select></label>
+<button type="button" id="rqRefresh" class="secondary">Refresh</button></div>
+<details id="rqChain"><summary>Request to grant chain (requested, recommended, granted)</summary><p class="rq-note">Shows how much was asked for, what the data-based rule recommended, and what the office granted. Percentages compare only requests that reached that stage. The system recommends; the office decides.</p><div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Category / Unit</th><th>Requests</th><th>Requested</th><th>Recommended</th><th>Granted</th><th>Recommended as % of assessed requests</th><th>Granted as % of decided requests</th></tr></thead><tbody id="rqChainRows"><tr><td colspan="7">Loading.</td></tr></tbody></table></div></details>
+<div class="rq-table-wrap"><table class="vp-tbl"><thead><tr><th>Select</th><th>ID / Date</th><th>Barangay</th><th>Category / Unit</th><th>Requested</th><th>Recommended</th><th>Granted</th><th>Status / Source</th><th>Action</th></tr></thead><tbody id="rqRows"></tbody></table></div>
+<div class="pager"><button type="button" id="rqPrev" class="secondary">Previous</button><span id="rqPage"></span><button type="button" id="rqNext" class="secondary">Next</button></div>
+<details id="rqAllocation"><summary>Plan an allocation or generate a vaccine request letter</summary>
+<p class="rq-note">Select requests above. Move them into the order the office wants to serve them. Recommendations use the remaining supply after earlier requests are funded in full. The stock input is a planning scenario, not a live inventory balance.</p>
+<ol id="rqOrder" class="rq-order"></ol>
+<div class="rq-controls"><label>Vials available for this selected group<input id="rqAvailable" type="number" min="0" max="10000000" step="1" placeholder="Enter vials on hand"></label>
+<label>Service level<select id="rqLevel"><option value=".5">50%</option><option value=".6">60%</option><option value=".75" selected>75%</option><option value=".9">90%</option><option value=".95">95%</option></select></label>
+<button type="button" id="rqCalculate">Calculate and save recommendations</button><button type="button" id="rqLetter" class="secondary">Download vaccine request letter</button><button type="button" id="rqClear" class="secondary">Clear selection</button></div>
+<p class="rq-note">The letter uses the original quantities requested, including unmet needs. Other categories are captured for officer review without an unsupported numerical recommendation.</p>
+<div id="rqPlan"></div></details>
+<div id="rqMessage" class="rq-message" role="status" aria-live="polite"></div>
+</section>
+<dialog id="rqDialog" class="rq-dialog"><section class="rq-card">
+<div class="rq-head"><h2 id="rqDecisionTitle">Request decision</h2><button type="button" id="rqClose" class="secondary">Close</button></div>
+<div id="rqDetail"></div><div id="rqBasis"></div>
+<form id="rqDecision"><div class="rq-grid"><label>Status<select name="status"><option>UNDER_REVIEW</option><option>APPROVED</option><option>PARTIALLY_APPROVED</option><option>DEFERRED</option><option>DECLINED</option><option>FULFILLED</option></select></label>
+<label>Quantity granted<input name="qty_granted" type="number" min="0" step="1" required></label>
+<label>Completed vaccination session ID<input name="session_id" type="number" min="1" step="1"></label>
+<label class="rq-wide">Reason for decision<textarea name="decision_note" maxlength="512" placeholder="Required for a partial grant, deferral, rejection, or override"></textarea></label></div>
+<label style="flex-direction:row;margin:12px 0"><input name="override" type="checkbox"> Override an existing decision (reason required)</label>
+<button type="submit" id="rqSave">Save officer decision</button><div id="rqDecisionMessage" role="status" aria-live="polite"></div></form>
+</section></dialog>
+
+  <!-- Overdue hero -->
+  <div class="section-h">
+    <h2>Needs attention</h2>
+    <button class="btn" id="sendAll">Send all reminders</button>
+  </div>
+  <div class="hero" id="overdue"><div class="empty">Loading…</div></div>
+
+  <!-- Demand forecast -->
+  <div class="section-h">
+    <h2>Demand forecast</h2>
+    <span class="hint" id="fcHint"></span>
+    <button class="btn small ghost" id="fcExport" style="margin-left:8px">Export CSV</button>
+  </div>
+  <div class="fc-wrap">
+    <div class="fc-tabs" id="fcTabs">
+      <button class="fc-tab on" data-svc="vaccination">Vaccinations</button>
+      <!-- Registrations and Inquiries accumulate only as the system runs; both
+           sit far below the 12 months ARIMA needs, so they are shown as planned
+           rather than as empty tabs that read like a broken feature. -->
+      <span class="hint" style="align-self:center;margin-left:4px">Registrations &amp; inquiries: planned once 12 months of data exist</span>
+      <button class="btn small ghost" id="fcRefresh" style="margin-left:auto">Recompute</button>
+    </div>
+    <div id="fcBody"><div class="fc-empty"><div class="sub">Loading…</div></div></div>
+  </div>
+
+
+  <!-- Supply scenarios -->
+  <div class="section-h">
+    <h2>Supply scenarios</h2>
+    <span class="hint">What follows from when vaccine arrives</span>
+  </div>
+  <div class="fc-wrap">
+    <div id="scBody"><div class="fc-empty"><div class="sub">Loading…</div></div></div>
+  </div>
+
+  <!-- Session vial planner -->
+  <div class="section-h">
+    <h2>Session vial planner</h2>
+    <span class="hint" id="vpHint"></span>
+    <button class="btn small ghost" id="vpExport" style="margin-left:8px">Export CSV</button>
+  </div>
+  <div class="fc-wrap">
+    <div class="vp-row">
+      <div style="flex:1;min-width:240px">
+        <label for="vpBrgy">Barangay / barangays (comma-separated)</label>
+        <!-- Free text, not a select: the planner takes several barangays at once
+             for a whole drive. The datalist gives the same spellings as the
+             dropdown without losing multi-entry. -->
+        <input type="text" id="vpBrgy" list="brgyList" style="width:100%"
+               placeholder="BINAN, CABANBANAN, SABANG" autocomplete="off">
+        <datalist id="brgyList"></datalist>
+      </div>
+      <div>
+        <!-- Provincial allocation is fixed and routinely smaller than the
+             request. Without this the planner answers "what would fully serve
+             these barangays", which is only half the decision. -->
+        <label for="vpAvail">Vials on hand <span style="text-transform:none">(optional)</span></label>
+        <input type="number" id="vpAvail" min="0" style="width:110px" placeholder="any">
+      </div>
+      <div>
+        <label for="vpSL">Service level</label>
+        <select id="vpSL">
+          <option value="0.5">50% — fewest vials</option>
+          <option value="0.6">60%</option>
+          <option value="0.75" selected>75% — balanced</option>
+          <option value="0.9">90%</option>
+          <option value="0.95">95% — rarely short</option>
+        </select>
+      </div>
+      <button class="btn" id="vpGo">Plan</button>
+    </div>
+    <div id="vpBody"><div class="fc-empty"><div class="sub">Enter a barangay to plan a session.</div></div></div>
+  </div>
+
+  <!-- Record a session -->
+  <div class="section-h">
+    <h2>Record a vaccination session</h2>
+    <span class="hint" id="rsHint"></span>
+  </div>
+  <div class="fc-wrap">
+    <div class="vp-row">
+      <div style="min-width:170px;flex:1">
+        <label for="rsBrgy">Barangay</label>
+        <select id="rsBrgy" style="width:100%"><option value="">Loading…</option></select>
+      </div>
+      <div>
+        <label for="rsDate">Date</label>
+        <input type="date" id="rsDate">
+      </div>
+      <div>
+        <label for="rsDoses">Doses administered</label>
+        <input type="number" id="rsDoses" min="1" max="5000" style="width:120px">
+      </div>
+      <div>
+        <label for="rsVials">Vials used <span style="text-transform:none">(optional)</span></label>
+        <input type="number" id="rsVials" min="0" step="0.1" style="width:100px" placeholder="auto">
+      </div>
+      <div>
+        <!-- The one figure knowable BEFORE a drive: barangays keep
+             pre-registration lists. Animals per household has been the most
+             stable quantity in this data (CV 0.23 against 0.92 for monthly
+             totals), so recording it is what could turn the planner from a
+             distribution into a prediction. -->
+        <label for="rsHH">Households <span style="text-transform:none">(optional)</span></label>
+        <input type="number" id="rsHH" min="1" style="width:100px" placeholder="—">
+      </div>
+      <div>
+        <label for="rsReq">Vials requested <span style="text-transform:none">(optional)</span></label>
+        <input type="number" id="rsReq" min="0" style="width:110px" placeholder="—">
+      </div>
+      <button class="btn" id="rsSave">Record</button>
+    </div>
+    <div id="rsRatio"></div>
+    <div id="rsList"><div class="fc-empty"><div class="sub">Loading recent sessions…</div></div></div>
+  </div>
+
+  <!-- Charter assistant -->
+  <div class="section-h"><h2>Citizen's Charter assistant</h2></div>
+  <div class="xcard">
+    <div style="flex:1;min-width:260px">
+      <div class="t">Ask the charter, the Anti-Rabies Act, and DOH guidelines</div>
+      <div class="d">Retrieval-augmented answers drawn from the Pagsanjan charter, the
+        provincial ARTA charter, RA 9482 and its IRR, DOH AO 2018-0013 and EO 84 —
+        with the source section cited on every answer.</div>
+    </div>
+    <a class="btn" href="/charter">Open Charter Q&amp;A</a>
+  </div>
+</div>
+
+<!-- Detail / action modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 id="mTitle">Pet detail</h3>
+    <div class="body" id="mBody"></div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+      <button class="btn ghost" id="mDelBtn" style="color:var(--red);border-color:var(--red)">Remove pet</button>
+      <button class="btn ghost" id="mEditBtn">Edit pet</button>
+      <button class="btn" id="mVaxBtn">Record vaccination</button>
+    </div>
+  </div>
+</div>
+
+<!-- Record vaccination modal -->
+<div class="modal-bg" id="vaxBg">
+  <div class="modal">
+    <h3>Record vaccination</h3>
+    <div class="body">
+      <div class="field"><label>Pet ID</label><input id="vId" readonly></div>
+      <div class="field"><label>Date vaccinated</label><input id="vDate" type="date"></div>
+      <div class="field"><label>Vaccine used</label><input id="vVaccine" value="RABISIN"></div>
+      <div class="field"><label>Disease (optional)</label><input id="vDisease" placeholder="e.g. Rabies"></div>
+      <div class="field"><label>Technician name</label><input id="vTech" placeholder="Full name"></div>
+      <div class="field"><label>Batch / lot no. (optional)</label><input id="vBatch"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" onclick="closeVax()">Cancel</button>
+      <button class="btn" id="vSave">Save record</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast host. toast() writes into this; without it every success/error
+     message threw on a null element. -->
+<div class="toast" id="toast"></div>
+<!-- Chart.js powers the forecast plot. This tag sat between the page markup
+     and the main <script> block; losing it left renderForecast() throwing on
+     `new Chart(...)` and the panel silently blank. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const fmtDate = (iso) => iso ? new Date(iso + "T00:00:00").toLocaleDateString("en-PH", {year:"numeric", month:"short", day:"numeric"}) : "—";
+const label = {OVERDUE:"Overdue", PROACTIVE_ALERT_DUE:"Due soon", UP_TO_DATE:"Up to date", NEVER_VACCINATED:"Never vaccinated"};
+
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// Shared JSON fetch. Every loader below used to do
+//     await (await fetch(url)).json()
+// with no error handling. When an endpoint returns a 500 with a plain-text
+// body, .json() throws, the exception escapes the async function, and the
+// panel keeps its "Loading…" placeholder forever — a hang that looks like a
+// dead app but is really an unreported server error. This surfaces it instead.
+async function fetchJSON(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    let detail = "";
+    try { detail = (await r.json()).detail || ""; } catch (e) { /* non-JSON body */ }
+    throw new Error(detail ? `${r.status} — ${detail}` : `${r.status} ${r.statusText}`);
+  }
+  return r.json();
+}
+
+function panelError(sel, colspan, e) {
+  console.error(sel, e);
+  const msg = `Could not load — ${e.message}`;
+  $(sel).innerHTML = colspan
+    ? `<tr><td colspan="${colspan}" class="empty">${msg}</td></tr>`
+    : `<div class="empty">${msg}</div>`;
+}
+
+// Must include loadForecast: the forecast panel has no init call of its own
+// (loadForecast() otherwise only fires from the tab click handler), so
+// omitting it here left the card blank on first paint.
+function refreshAll(){ loadStats(); loadOverdue(); loadForecast(); }
+
+async function loadStats() {
+  let s;
+  try { s = await fetchJSON("/api/stats"); }
+  catch (e) { return panelError("#stats", 0, e); }
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="n mono">${s.total}</div><div class="l">Registered</div>
+      <div class="l" style="text-transform:none;letter-spacing:0;margin-top:4px;">${s.registered_dogs||0} dogs · ${s.registered_cats||0} cats${s.other_species ? ` · ${s.other_species} other` : ""}</div></div>
+    <div class="stat alert"><div class="n mono">${s.overdue}</div><div class="l">Overdue</div></div>
+    <div class="stat"><div class="n mono" style="color:var(--amber)">${s.due_soon}</div><div class="l">Due soon</div></div>
+    <div class="stat"><div class="n mono" style="color:var(--green)">${s.up_to_date}</div><div class="l">Up to date</div></div>
+    <div class="stat"><div class="n mono">${s.never_vaccinated}</div><div class="l">No record</div></div>`;
+}
+
+let attnPets = [], attnTab = "OVERDUE", attnExpanded = false;
+const ATTN_PREVIEW = 5;
+
+async function loadOverdue() {
+  let d;
+  try { d = await fetchJSON("/api/overdue"); }
+  catch (e) { return panelError("#overdue", 0, e); }
+  if (!d.count) { $("#overdue").innerHTML = `<div class="empty">No pets need attention right now.</div>`; return; }
+  // Most urgent first: overdue before due-soon, then the oldest last shot first.
+  const rank = {OVERDUE: 0, PROACTIVE_ALERT_DUE: 1, NEVER_VACCINATED: 2};
+  attnPets = d.pets.slice().sort((a, b) =>
+    (rank[a.status] ?? 9) - (rank[b.status] ?? 9) ||
+    String(a.last_rabies_date || "").localeCompare(String(b.last_rabies_date || "")));
+  // Open on Overdue if there are any, otherwise on Due soon.
+  const has = st => attnPets.some(a => a.status === st);
+  attnTab = has("OVERDUE") ? "OVERDUE" : has("PROACTIVE_ALERT_DUE") ? "PROACTIVE_ALERT_DUE" : "";
+  attnExpanded = false;
+  renderAttention();
+}
+
+function renderAttention() {
+  const count = st => attnPets.filter(a => !st || a.status === st).length;
+  const tabs = [["OVERDUE", "Overdue"], ["PROACTIVE_ALERT_DUE", "Due soon"],
+                ["NEVER_VACCINATED", "No record"], ["", "All"]]
+    .filter(([st]) => st === "" || count(st) > 0);
+  const list = attnPets.filter(a => !attnTab || a.status === attnTab);
+  const shown = attnExpanded ? list : list.slice(0, ATTN_PREVIEW);
+  const rest = list.length - shown.length;
+
+  $("#overdue").innerHTML = `
+    <div class="attn-bar">
+      ${tabs.map(([st, lb]) => `<button class="attn-tab ${st === attnTab ? "on" : ""}"
+          onclick="attnTab='${st}';attnExpanded=false;renderAttention()">${lb} · ${count(st)}</button>`).join("")}
+    </div>
+    <div class="attn-list ${attnExpanded ? "scroll" : ""}">
+      ${shown.map(a => `
+      <div class="row">
+        <div>
+          <div class="who">${a.pet_name || a.pet_id} <span class="sub">· ${a.species||""}${a.breed ? ` (${a.breed})` : ""}</span></div>
+          <div class="sub">${a.owner_name} · ${a.barangay||"—"}</div>
+        </div>
+        <div class="cell-hide"><span class="sub">Last rabies</span><br>${fmtDate(a.last_rabies_date)}</div>
+        <div><span class="pill ${a.status}">${label[a.status]}</span></div>
+        <div><button class="btn small ghost" onclick="openDetail('${a.pet_id}')">View</button></div>
+      </div>`).join("")}
+    </div>
+    ${rest > 0 ? `<button class="attn-more" onclick="attnExpanded=true;renderAttention()">Show all ${list.length}</button>`
+      : attnExpanded && list.length > ATTN_PREVIEW
+        ? `<button class="attn-more" onclick="attnExpanded=false;renderAttention()">Show less</button>` : ""}`;
+}
+
+async function openDetail(id) {
+  let a;
+  try { a = await fetchJSON(`/api/pet/${id}`); }
+  catch (e) {
+    console.error("openDetail", e);
+    toast(`Could not open that record — ${e.message}`);
+    return;
+  }
+  window._currentPet = a;
+  $("#mTitle").textContent = `${a.pet_name || a.pet_id} — ${a.species || ""}`;
+  $("#mBody").innerHTML = `
+    <div class="kv">
+      <span class="k">Owner</span><span>${a.owner_name}</span>
+      <span class="k">Contact</span><span class="mono">${a.contact_no || "—"}</span>
+      <span class="k">Barangay</span><span>${a.barangay || "—"}</span>
+      <span class="k">Pet ID</span><span class="mono">${a.pet_id}</span>
+      <span class="k">Breed</span><span>${a.breed || "—"}</span>
+      <span class="k">Sex / age</span><span>${a.sex || "—"} · ${a.age_years||0}y ${a.age_months||0}m</span>
+      <span class="k">Colour / markings</span><span>${a.color_markings || "—"}</span>
+      <span class="k">Spayed / neutered</span><span>${a.is_spayed_neutered ? "Yes" : "No"}</span>
+      <span class="k">Date registered</span><span class="mono">${fmtDate(a.date_registered)}</span>
+      <span class="k">Rabies status</span><span><span class="pill ${a.status}">${label[a.status]}</span></span>
+      <span class="k">Last rabies</span><span class="mono">${fmtDate(a.last_rabies_date)}</span>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;">Vaccination history</div>
+    <div class="hist">${a.history.length ? a.history.map(h => `
+      <div class="h-row">
+        <span>${fmtDate(h.date_vaccinated)} · ${h.vaccine_used||h.disease||"—"}<br><span class="sub">${h.technician_name||""}</span></span>
+        <span style="white-space:nowrap">
+          <button class="btn small ghost" onclick='editVax(${JSON.stringify(h)}, "${a.pet_id}")'>Edit</button>
+          <button class="btn small ghost" style="color:var(--red)" onclick='delVax("${h.record_id}", "${a.pet_id}")'>×</button>
+        </span>
+      </div>
+    `).join("") : `<div class="empty">No vaccination records.</div>`}</div>`;
+  $("#mVaxBtn").onclick = () => { closeModal(); openVax(a.pet_id); };
+  // Editing lives on the registry page; deep-link to it rather than shipping
+  // the whole edit modal on a page whose job is decisions, not records.
+  $("#mEditBtn").onclick = () => { window.location = `/registry?pet=${encodeURIComponent(a.pet_id)}`; };
+  $("#mDelBtn").onclick = async () => {
+    if (!confirm(`Remove pet '${a.pet_name||a.pet_id}'? Its history is kept but it leaves the active registry.`)) return;
+    const r = await fetch(`/api/pets/${a.pet_id}`, {method:"DELETE"});
+    const d = await r.json();
+    if (r.ok) { toast("Pet removed ✓"); closeModal(); refreshAll(); }
+    else { toast(d.detail || "Could not remove."); }
+  };
+  $("#modalBg").classList.add("show");
+}
+function closeModal(){ $("#modalBg").classList.remove("show"); }
+
+function openVax(id) {
+  $("#vId").value = id;
+  $("#vDate").value = new Date().toISOString().slice(0,10);
+  $("#vVaccine").value = "RABISIN"; $("#vDisease").value = "";
+  $("#vTech").value = ""; $("#vBatch").value = "";
+  $("#vaxBg").classList.add("show");
+}
+function closeVax(){ $("#vaxBg").classList.remove("show"); }
+
+$("#vSave").onclick = async () => {
+  const payload = {
+    pet_id: $("#vId").value,
+    date_vaccinated: $("#vDate").value,
+    vaccine_used: $("#vVaccine").value,
+    disease: $("#vDisease").value,
+    technician_name: $("#vTech").value,
+    batch_lot_no: $("#vBatch").value,
+  };
+  $("#vSave").disabled = true;
+  try {
+    const r = await fetch("/api/vaccination", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    const d = await r.json();
+    if (r.ok) { toast("Vaccination recorded ✓"); closeVax(); refreshAll(); }
+    else { toast(d.detail || "Could not save."); }
+  } catch(e) { toast("Network error."); }
+  $("#vSave").disabled = false;
+};
+
+$("#sendAll").onclick = async () => {
+  if (!confirm("Send reminders to all overdue / due-soon owners?\n(Dry-run unless live SMS is enabled on the server.)")) return;
+  $("#sendAll").disabled = true; $("#sendAll").textContent = "Sending…";
+  try {
+    const r = await fetch("/api/send-reminders", {method:"POST", headers:{"Content-Type":"application/json"}, body:"{}"});
+    const d = await r.json();
+    const okN = d.results.filter(x=>x.ok).length;
+    toast(`${okN} of ${d.count} reminders processed`);
+  } catch(e){ toast("Send failed."); }
+  $("#sendAll").disabled = false; $("#sendAll").textContent = "Send all reminders";
+};
+
+// registry/owner loaders live on /registry; this page reloads only its own panels
+
+// ---- Demand forecast (ARIMA) ----
+let fcService = "vaccination";
+let fcChart = null;
+const SVC_LABEL = {vaccination:"vaccinations", registration:"pet registrations", inquiry:"citizen inquiries"};
+
+function fcPeriodLabel(p) {
+  // "2026-03" -> "Mar 2026"
+  const [y, m] = String(p).split("-");
+  if (!m) return p;
+  return new Date(+y, +m - 1, 1).toLocaleDateString("en-PH", {month:"short", year:"numeric"});
+}
+
+async function loadForecast(refresh) {
+  const body = $("#fcBody");
+  body.innerHTML = `<div class="fc-empty"><div class="sub">Fitting model…</div></div>`;
+  $("#fcHint").textContent = "";
+  if (fcChart) { fcChart.destroy(); fcChart = null; }
+
+  let d;
+  try {
+    const url = `/api/forecast?service=${fcService}&horizon=6${refresh ? "&refresh=1" : ""}`;
+    d = await (await fetch(url)).json();
+  } catch (e) {
+    body.innerHTML = `<div class="fc-empty"><div class="sub">Could not reach the forecasting service.</div></div>`;
+    return;
+  }
+
+  if (!d.ok) { renderForecastEmpty(d); return; }
+  renderForecast(d);
+}
+
+async function renderForecastEmpty(d) {
+  // Not enough history yet — explain the gap instead of showing an error.
+  let status = {};
+  try { status = await (await fetch("/api/forecast/data-status")).json(); } catch(e) {}
+  const st = status[fcService] || {};
+  const have = st.n_observations ?? d.n_observations ?? 0;
+  const need = st.min_required ?? d.required ?? 12;
+  const pct = Math.min(100, Math.round((have / need) * 100));
+
+  $("#fcBody").innerHTML = `
+    <div class="fc-empty">
+      <div class="big">Not enough history to forecast ${SVC_LABEL[fcService]} yet</div>
+      <div class="fc-bar"><div style="width:${pct}%"></div></div>
+      <div class="sub">
+        ${have} month${have === 1 ? "" : "s"} of data recorded — ${need} needed to fit an ARIMA model.<br>
+        ${have < need ? `<strong>${need - have} more month${need - have === 1 ? "" : "s"}</strong> required.` : ""}
+        ${st.seasonal_required && have < st.seasonal_required
+          ? `<br>${st.seasonal_required} months would also allow the March campaign peak to be modelled.` : ""}
+        <br><br>Encode past monthly totals from the office's accomplishment reports
+        into <code>monthly_service_counts</code> to backfill this immediately.
+      </div>
+    </div>`;
+}
+
+function renderForecast(d) {
+  const hist = d.history_periods.map(fcPeriodLabel);
+  const fut  = d.forecast_periods.map(fcPeriodLabel);
+  const labels = hist.concat(fut);
+  const nH = hist.length;
+  const pad = new Array(nH).fill(null);
+
+  // Join the forecast line to the last observed point so there is no visual gap.
+  const lastObs = d.history_values[nH - 1];
+  const fcLine   = pad.slice(0, nH - 1).concat([lastObs], d.forecast_values);
+  const loBand   = pad.slice(0, nH - 1).concat([lastObs], d.conf_lower);
+  const hiBand   = pad.slice(0, nH - 1).concat([lastObs], d.conf_upper);
+
+  $("#fcBody").innerHTML = `
+    <div class="fc-chart"><canvas id="fcCanvas"></canvas></div>
+    <div class="fc-meta" id="fcMetaRow"></div>
+    <div id="fcMetricsWrap"></div>
+    <div id="fcWarn"></div>`;
+
+  const ctx = document.getElementById("fcCanvas");
+  fcChart = new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets: [
+      { label: "95% CI upper", data: hiBand, borderColor: "transparent",
+        backgroundColor: "rgba(44,107,96,0.13)", pointRadius: 0, fill: "+1" },
+      { label: "95% CI lower", data: loBand, borderColor: "transparent",
+        backgroundColor: "rgba(44,107,96,0.13)", pointRadius: 0, fill: false },
+      { label: "Actual", data: d.history_values.concat(new Array(fut.length).fill(null)),
+        borderColor: "#1f5048", backgroundColor: "#1f5048",
+        borderWidth: 2, pointRadius: 2, tension: 0.15 },
+      { label: "Forecast", data: fcLine, borderColor: "#b8791b",
+        backgroundColor: "#b8791b", borderWidth: 2, borderDash: [6,4],
+        pointRadius: 3, tension: 0.15 },
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { labels: { filter: it => !it.text.startsWith("95%"), boxWidth: 12, font: {size: 12} } },
+        tooltip: { callbacks: { label: c => c.parsed.y == null ? null
+                    : `${c.dataset.label}: ${Math.round(c.parsed.y)}` } },
+      },
+      scales: {
+        y: { beginAtZero: true, title: {display: true, text: "Count per month"},
+             ticks: { precision: 0 } },
+        x: { ticks: { maxRotation: 0, autoSkipPadding: 18 } },
+      },
+    },
+  });
+
+  const nextVal = d.forecast_values[0], nextLab = fut[0];
+  window.__fc = d;
+  $("#fcMetaRow").innerHTML = `
+    <div class="m"><div class="k">Next month (${nextLab})</div>
+      <div class="v">${Math.round(nextVal)} <span style="font-weight:400;color:var(--muted)">
+      (${Math.round(d.conf_lower[0])}–${Math.round(d.conf_upper[0])})</span></div></div>
+    <div class="m"><div class="k">Model</div><div class="v">${d.model_label || "ARIMA"}(${d.order.join(", ")})${
+      d.seasonal ? " × (" + d.seasonal_order.join(", ") + ")" : ""}</div></div>
+    <div class="m"><div class="k">History</div><div class="v">${d.n_observations} months</div></div>
+    <div class="m"><div class="k">Train / test</div><div class="v">${d.train_size} / ${d.test_size}</div></div>
+    <div class="m"><div class="k">Seasonality</div><div class="v">${
+      d.seasonal ? "Seasonal terms" : (d.campaign_dummy ? "Campaign dummy" : "Not modelled")}</div></div>
+    <div class="m"><div class="k">Order selected by</div><div class="v">${d.selection || "—"}</div></div>`;
+
+  // Accuracy table: ARIMA against the baselines, lowest RMSE highlighted.
+  const names = Object.keys(d.metrics);
+  const modelName = d.model_label || "ARIMA";
+  const best = names.reduce((a,b) => d.metrics[a].rmse <= d.metrics[b].rmse ? a : b);
+  $("#fcMetricsWrap").innerHTML = `
+    <table class="fc-metrics">
+      <thead><tr><th>Model</th><th>RMSE</th><th>MAE</th><th>MAPE %</th></tr></thead>
+      <tbody>${names.map(n => `
+        <tr class="${n === best ? "fc-best" : ""}">
+          <td>${n}${n === best ? " ✓" : ""}</td>
+          <td class="mono">${d.metrics[n].rmse.toFixed(2)}</td>
+          <td class="mono">${d.metrics[n].mae.toFixed(2)}</td>
+          <td class="mono">${isNaN(d.metrics[n].mape) ? "—" : d.metrics[n].mape.toFixed(1)}</td>
+        </tr>`).join("")}</tbody>
+    </table>
+    <div class="hint" style="font-size:12px;margin-top:7px;">
+      Held-out accuracy on the last ${d.test_size} months. Lower is better.
+      ${best === modelName ? modelName + " beats every baseline."
+        : `<strong>${best}</strong> currently beats ARIMA — report this honestly rather than hiding it.`}
+    </div>`;
+
+  $("#fcWarn").innerHTML = (d.warnings || []).map(w =>
+    `<div class="fc-note">${w}</div>`).join("");
+  $("#fcHint").textContent = `${d.series_start} to ${d.series_end}`
+    + (d.cached ? ` · computed ${ago(d.age_seconds)}` : " · just computed");
+}
+
+$("#fcTabs").addEventListener("click", (e) => {
+  const t = e.target.closest(".fc-tab");
+  if (!t) return;
+  document.querySelectorAll(".fc-tab").forEach(x => x.classList.remove("on"));
+  t.classList.add("on");
+  fcService = t.dataset.svc;
+  loadForecast();
+});
+$("#fcRefresh").addEventListener("click", () => loadForecast(true));
+
+
+// ---- shared: relative time + CSV download ----
+// "cached" said a result was reused but not how old it was. After handover a
+// stale panel looks identical to a live one.
+function ago(sec) {
+  if (sec == null) return "recently";
+  if (sec < 60) return "just now";
+  if (sec < 3600) return `${Math.round(sec / 60)} min ago`;
+  if (sec < 86400) return `${Math.round(sec / 3600)} h ago`;
+  return `${Math.round(sec / 86400)} d ago`;
+}
+function fmtStamp(iso) {
+  if (!iso) return "never";
+  const d = new Date(iso.length <= 10 ? iso + "T00:00:00" : iso);
+  return d.toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric" });
+}
+// Results tables were being retyped into the manuscript by hand. Exporting
+// removes transcription error from the write-up.
+function downloadCSV(filename, rows) {
+  if (!rows || !rows.length) { toast("Nothing to export yet."); return; }
+  const cols = Object.keys(rows[0]);
+  const esc2 = v => {
+    const t = v == null ? "" : String(v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  };
+  const csv = [cols.join(","), ...rows.map(r => cols.map(c => esc2(r[c])).join(","))]
+    .join("\r\n");
+  const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv" }));
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  toast(`Exported ${rows.length} row(s)`);
+}
+
+// ---- Supply scenarios ----
+// Deliberately NOT the ARIMA prediction interval. That interval (367, 0-1030)
+// is one forecast with its uncertainty; presenting its bounds as "best" and
+// "worst" would misread it. These three cases vary the assumption that
+// actually drives the series -- when provincial vaccine arrives -- and each
+// figure is the average of months observed under that condition.
+async function loadScenarios() {
+  const box = $("#scBody");
+  try {
+    const d = await fetchJSON("/api/planner/supply-scenarios");
+    if (!d.ok) {
+      box.innerHTML = `<div class="fc-empty"><div class="sub">${vpEsc(d.reason)}</div></div>`;
+      return;
+    }
+    let h = '<div class="sc-grid">';
+    for (const s of d.scenarios) {
+      const zero = s.monthly === 0 ? " zero" : "";
+      const val = s.monthly == null ? "—" : s.monthly;
+      const rng = (s.n && s.monthly)
+        ? `observed ${s.low}–${s.high} across ${s.n} month(s)`
+        : (s.n ? `observed in ${s.n} month(s)` : "not yet observed");
+      h += `<div class="sc${zero}">
+        <div class="lab">${vpEsc(s.label)}</div>
+        <div class="val">${val}<small>doses / month</small></div>
+        <div class="rng">${vpEsc(rng)}</div>
+        <div class="det">${vpEsc(s.detail)}</div></div>`;
+    }
+    h += "</div>";
+    h += `<div class="fc-note">${vpEsc(d.note)}</div>`;
+    box.innerHTML = h;
+  } catch (e) {
+    box.innerHTML = `<div class="fc-empty"><div class="sub">Could not load scenarios — ${vpEsc(e.message)}</div></div>`;
+  }
+}
+loadScenarios();
+
+// ---- Session vial planner ----
+// Serves the decision the office actually makes: how many vials to carry to a
+// barangay on one session day. A vial holds 10 doses and an opened vial must be
+// finished the same day, so the answer is a service level, not a point estimate.
+// See session_forecast.py for the leave-one-out evidence that no predictor beats
+// the median on this data.
+const vpEsc = v => String(v).replace(/[&<>"]/g, c =>
+  ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+
+async function vpPlan() {
+  const raw = $("#vpBrgy").value.trim();
+  const sl  = $("#vpSL").value;
+  const avail = $("#vpAvail").value.trim();
+  const body = $("#vpBody");
+  if (!raw) { body.innerHTML = '<div class="fc-empty"><div class="sub">Enter a barangay to plan a session.</div></div>'; return; }
+  body.innerHTML = '<div class="fc-empty"><div class="sub">Planning…</div></div>';
+  try {
+    const [plan, levels] = await Promise.all([
+      fetchJSON(`/api/planner/drive?barangays=${encodeURIComponent(raw)}&service_level=${sl}`
+                + (avail === "" ? "" : `&vials_available=${encodeURIComponent(avail)}`)),
+      fetchJSON("/api/planner/service-levels")
+    ]);
+    let h = `<div class="vp-out">
+      <div><div class="vp-big">${plan.total_vials}<small>vials</small></div></div>
+      <div><div class="vp-big">${plan.total_doses}<small>doses</small></div></div></div>`;
+    h += '<table class="vp-tbl"><tr><th>Barangay</th><th>Vials</th><th>Typical session</th><th>Shortfall risk</th><th>Basis</th></tr>';
+    for (const b of plan.barangays) {
+      const basis = b.basis === "barangay"
+        ? `own history (n=${b.n_sessions_barangay})`
+        : `municipal — ${b.n_sessions_barangay} of ${plan.barangays.length && 6} sessions`;
+      h += `<tr><td>${vpEsc(b.barangay)}</td><td>${b.recommended_vials}</td>
+        <td>${Math.round(b.median_doses)} doses</td>
+        <td>${b.shortfall_risk_pct}%</td><td>${vpEsc(basis)}</td></tr>`;
+    }
+    h += "</table>";
+    if (plan.vials_available != null) {
+      const short = plan.constrained;
+      h += `<div class="vp-alloc${short ? " short" : ""}">`;
+      h += `<b>${plan.vials_available}</b> vial(s) on hand · `
+         + `<b>${plan.vials_committed}</b> committed · `
+         + (short ? `<b>${plan.vials_short}</b> short`
+                  : `<b>${plan.vials_spare}</b> spare`);
+      if (plan.unfunded && plan.unfunded.length) {
+        h += "<ul>" + plan.unfunded.map(u =>
+          `<li>${vpEsc(u.barangay)} — not covered (${u.vials_short} vials short)</li>`
+        ).join("") + "</ul>";
+      }
+      if (plan.advice) h += `<div style="margin-top:7px">${vpEsc(plan.advice)}</div>`;
+      h += "</div>";
+    }
+    // Letter lines stay the FULL recommendation, not the funded subset: the
+    // request letter is what asks the province for more, so trimming it to what
+    // is already on hand would cement the shortfall into the next allocation.
+    h += `<div class="vp-lines">${plan.letter_lines.map(vpEsc).join("\n")}</div>`;
+    h += '<div class="fc-note">Lines above are formatted for the request letter to the '
+       + 'Provincial Veterinarian — the document that determines how much vaccine the '
+       + 'municipality receives. Session size depends on crew capacity, weather and supply '
+       + 'timing, so treat this as a planning range, not a prediction.</div>';
+    if (levels.ok) {
+      h += '<table class="vp-tbl"><tr><th>Service level</th><th>Vials</th><th>Shortfall risk</th><th>Expected unused</th></tr>';
+      for (const r of levels.rows) {
+        const on = Math.abs(r.service_level - parseFloat(sl)) < 1e-6 ? ' class="on"' : "";
+        h += `<tr${on}><td>${Math.round(r.service_level*100)}%</td><td>${r.vials}</td>
+          <td>${r.shortfall_risk_pct}%</td><td>${r.expected_waste_doses} doses</td></tr>`;
+      }
+      h += "</table>";
+    }
+    body.innerHTML = h;
+  } catch (e) {
+    body.innerHTML = `<div class="fc-empty"><div class="sub">Could not load the planner — ${vpEsc(e.message)}</div></div>`;
+  }
+}
+$("#vpGo").addEventListener("click", vpPlan);
+$("#vpBrgy").addEventListener("keydown", e => { if (e.key === "Enter") vpPlan(); });
+$("#vpAvail").addEventListener("keydown", e => { if (e.key === "Enter") vpPlan(); });
+(async () => {
+  try {
+    const st = await fetchJSON("/api/planner/data-status");
+    $("#vpHint").textContent = `${st.n_sessions} sessions across ${st.n_barangays} barangays`;
+  } catch (e) { /* planner is optional on this page */ }
+})();
+
+// ---- Auto-UPPERCASE all text inputs to match the all-caps database ----
+// Applies live as staff type, on every text input except passwords/numbers/dates.
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.tagName === "INPUT" && (el.type === "text" || el.type === "" || el.type === "search")) {
+    if (el.id === "apRegDate") return;   // date input: leave the value alone
+    const start = el.selectionStart, end = el.selectionEnd;
+    const up = el.value.toUpperCase();
+    if (el.value !== up) {
+      el.value = up;
+      // keep the cursor where it was so typing isn't disrupted
+      try { el.setSelectionRange(start, end); } catch (_) {}
+    }
+  }
+});
+
+// Logout
+$("#logout").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await fetch("/api/logout", {method:"POST"});
+  window.location.href = "/login";
+});
+
+// If any request returns 401 (session expired), bounce to login.
+const _fetch = window.fetch;
+window.fetch = async (...args) => {
+  const r = await _fetch(...args);
+  if (r.status === 401) { window.location.href = "/login"; }
+  return r;
+};
+
+// registry modals live on /registry
+// $("#modalBg").addEventListener("click", (e)=>{ if(e.target.id==="modalBg") closeModal(); });
+// $("#vaxBg").addEventListener("click", (e)=>{ if(e.target.id==="vaxBg") closeVax(); });
+refreshAll();
+
+$("#fcExport").addEventListener("click", () => {
+  const d = window.__fc;
+  if (!d || !d.metrics) { toast("Run the forecast first."); return; }
+  const rows = Object.entries(d.metrics).map(([model, m]) => ({
+    model, rmse: m.rmse, mae: m.mae, mape_pct: m.mape,
+    order: model === "ARIMA" ? (d.order || []).join("-") : "",
+    n_observations: d.n_observations, train: d.train_size,
+    validation: d.validation_size, test: d.test_size,
+    series_start: d.series_start, series_end: d.series_end,
+  }));
+  downloadCSV("forecast_model_comparison.csv", rows);
+});
+
+$("#vpExport").addEventListener("click", async () => {
+  try {
+    const lv = await fetchJSON("/api/planner/service-levels");
+    if (!lv.ok) { toast("No sessions recorded yet."); return; }
+    downloadCSV("service_levels.csv", lv.rows.map(r => ({
+      service_level_pct: Math.round(r.service_level * 100),
+      vials: r.vials, doses: r.doses,
+      shortfall_risk_pct: r.shortfall_risk_pct,
+      expected_unused_doses: r.expected_waste_doses,
+    })));
+  } catch (e) { toast("Could not export."); }
+});
+
+// ---- Record a vaccination session ----
+// Every session recorded here feeds the planner immediately. It is also how a
+// barangay eventually accumulates the six sessions needed for its own
+// distribution instead of the municipality-wide median.
+// Animals per household, shown only once at least one session records it.
+// Reported with its spread: this is a small-sample figure and presenting a
+// bare mean would overstate what it supports.
+async function loadRatio() {
+  const box = $("#rsRatio");
+  if (!box) return;
+  try {
+    const d = await fetchJSON("/api/planner/ratio");
+    if (!d.ok) { box.innerHTML = ""; return; }
+    box.innerHTML = `<div class="fc-note">Animals per household: <b>${d.mean}</b>`
+      + ` (range ${d.low}–${d.high}, n=${d.n}${d.cv != null ? `, CV ${d.cv}` : ""}).`
+      + ` A barangay's pre-registration count × this ratio estimates the doses it will need.</div>`;
+  } catch (e) { box.innerHTML = ""; }
+}
+loadRatio();
+
+async function rsLoad() {
+  const box = $("#rsList");
+  try {
+    const d = await fetchJSON("/api/planner/sessions?limit=10");
+    if (!d.sessions.length) {
+      box.innerHTML = '<div class="fc-empty"><div class="sub">No sessions recorded yet.</div></div>';
+      return;
+    }
+    let h = '<table class="vp-tbl"><tr><th>Date</th><th>Barangay</th><th>Doses</th><th>Vials</th><th>Households</th><th>Note</th><th></th></tr>';
+    for (const s of d.sessions) {
+      h += `<tr><td>${s.session_date || "—"}</td><td>${vpEsc(s.barangay)}</td>
+        <td>${s.doses_administered}</td><td>${s.vials_used ?? "—"}</td>
+        <td>${s.households_served ?? "—"}</td>
+        <td>${vpEsc(s.notes || s.source_doc || "")}</td>
+        <td style="text-align:right"><button class="btn small ghost" data-del="${s.id}">Remove</button></td></tr>`;
+    }
+    box.innerHTML = h + "</table>";
+    box.querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Remove this session? The planner will recalculate without it.")) return;
+      await fetch(`/api/planner/sessions/${b.dataset.del}`, { method: "DELETE" });
+      toast("Session removed");
+      rsLoad(); rsStatus();
+    }));
+  } catch (e) {
+    box.innerHTML = `<div class="fc-empty"><div class="sub">Could not load sessions — ${vpEsc(e.message)}</div></div>`;
+  }
+}
+
+async function rsStatus() {
+  try {
+    const st = await fetchJSON("/api/planner/data-status");
+    const txt = `${st.n_sessions} sessions across ${st.n_barangays} barangays`
+      + ` · last entry ${fmtStamp(st.last_encoded)}`;
+    $("#rsHint").textContent = txt;
+    if ($("#vpHint")) $("#vpHint").textContent = txt;
+  } catch (e) { /* optional */ }
+}
+
+$("#rsSave").addEventListener("click", async () => {
+  const payload = {
+    barangay: $("#rsBrgy").value.trim(),
+    session_date: $("#rsDate").value || null,
+    doses_administered: parseInt($("#rsDoses").value) || 0,
+    vials_used: $("#rsVials").value === "" ? null : parseFloat($("#rsVials").value),
+    households_served: $("#rsHH").value === "" ? null : parseInt($("#rsHH").value),
+    vials_requested: $("#rsReq").value === "" ? null : parseInt($("#rsReq").value),
+  };
+  if (!payload.barangay) { toast("Enter a barangay."); return; }
+  if (!payload.doses_administered) { toast("Enter the doses administered."); return; }
+  $("#rsSave").disabled = true;
+  try {
+    const r = await fetch("/api/planner/sessions", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    if (r.ok) {
+      toast(`Session recorded ✓ (${d.barangay}, ${d.vials_used} vials)`);
+      $("#rsDoses").value = ""; $("#rsVials").value = "";
+      $("#rsHH").value = ""; $("#rsReq").value = "";
+      loadRatio();
+      rsLoad(); rsStatus();
+      if ($("#vpBrgy").value.trim()) vpPlan();   // keep the plan in step
+    } else { toast(d.detail || "Could not record the session."); }
+  } catch (e) { toast("Network error."); }
+  $("#rsSave").disabled = false;
+});
+// Barangay names come from the API so the form, the datalist and the planner
+// all use one spelling. Typing them by hand produced near-misses ("Pob 1",
+// "POBLACION 1") that the planner could not match to existing sessions, and it
+// fell back to the municipal median without saying why.
+async function loadBarangays() {
+  try {
+    const d = await fetchJSON("/api/planner/barangays");
+    const sel = $("#rsBrgy");
+    sel.innerHTML = '<option value="">Select barangay…</option>' +
+      d.barangays.map(b => `<option>${vpEsc(b)}</option>`).join("");
+    const dl = $("#brgyList");
+    if (dl) dl.innerHTML = d.barangays.map(b => `<option value="${vpEsc(b)}">`).join("");
+    if (d.unrecognised.length) {
+      console.info("Barangay spellings in session data but not in the official 16:",
+                   d.unrecognised);
+    }
+  } catch (e) {
+    $("#rsBrgy").innerHTML = '<option value="">Could not load barangays</option>';
+  }
+}
+loadBarangays();
+
+$("#rsDate").value = new Date().toISOString().slice(0, 10);
+rsLoad(); rsStatus();
+
+</script>
+</body>
+</html>
